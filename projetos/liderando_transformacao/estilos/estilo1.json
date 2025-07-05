@@ -1,0 +1,251 @@
+{
+  "metadata": {
+    "versao": "1.0",
+    "descricao": "Configuração unificada de estilos para ODT e EPUB",
+    "projeto": "liderando_transformacao"
+  },
+  
+  "estilos": {
+    "TITULO_PRINCIPAL": {
+      "semantica": {
+        "tag_html": "h1",
+        "nivel_hierarquia": 1,
+        "tipo": "titulo",
+        "importancia": "alta"
+      },
+      "odt": {
+        "nome_estilo": "Título Principal",
+        "fonte": "Arial Black",
+        "tamanho": "18pt",
+        "cor": "#2C5282",
+        "espacamento_antes": "12pt",
+        "espacamento_depois": "6pt",
+        "alinhamento": "centro"
+      },
+      "epub": {
+        "classe_css": "titulo-principal",
+        "seletor": "h1.titulo-principal",
+        "propriedades": {
+          "font-family": "Arial Black, sans-serif",
+          "font-size": "1.8em",
+          "color": "#2C5282",
+          "text-align": "center",
+          "margin-top": "2em",
+          "margin-bottom": "1em",
+          "line-height": "1.2"
+        }
+      }
+    },
+
+    "SUBTITULO": {
+      "semantica": {
+        "tag_html": "h2",
+        "nivel_hierarquia": 2,
+        "tipo": "titulo",
+        "importancia": "media"
+      },
+      "odt": {
+        "nome_estilo": "Subtítulo",
+        "fonte": "Arial",
+        "tamanho": "14pt",
+        "cor": "#2C5282",
+        "negrito": true,
+        "espacamento_antes": "10pt",
+        "espacamento_depois": "4pt"
+      },
+      "epub": {
+        "classe_css": "subtitulo",
+        "seletor": "h2.subtitulo",
+        "propriedades": {
+          "font-family": "Arial, sans-serif",
+          "font-size": "1.4em",
+          "font-weight": "bold",
+          "color": "#2C5282",
+          "margin-top": "1.5em",
+          "margin-bottom": "0.8em",
+          "line-height": "1.3"
+        }
+      }
+    },
+
+    "CORPO_TEXTO": {
+      "semantica": {
+        "tag_html": "p",
+        "nivel_hierarquia": 0,
+        "tipo": "paragrafo",
+        "importancia": "normal"
+      },
+      "odt": {
+        "nome_estilo": "Corpo do Texto",
+        "fonte": "Liberation Serif",
+        "tamanho": "12pt",
+        "cor": "#000000",
+        "espacamento_linhas": "1.5",
+        "recuo_primeira_linha": "1.27cm",
+        "justificado": true
+      },
+      "epub": {
+        "classe_css": "corpo-texto",
+        "seletor": "p.corpo-texto",
+        "propriedades": {
+          "font-family": "Georgia, serif",
+          "font-size": "1em",
+          "color": "#333333",
+          "line-height": "1.6",
+          "text-align": "justify",
+          "text-indent": "2em",
+          "margin-bottom": "1em"
+        }
+      }
+    },
+
+    "CITACAO": {
+      "semantica": {
+        "tag_html": "blockquote",
+        "nivel_hierarquia": 0,
+        "tipo": "citacao",
+        "importancia": "especial"
+      },
+      "odt": {
+        "nome_estilo": "Citação",
+        "fonte": "Liberation Serif",
+        "tamanho": "11pt",
+        "cor": "#555555",
+        "italico": true,
+        "margem_esquerda": "2cm",
+        "margem_direita": "2cm",
+        "espacamento_antes": "6pt",
+        "espacamento_depois": "6pt"
+      },
+      "epub": {
+        "classe_css": "citacao",
+        "seletor": "blockquote.citacao",
+        "propriedades": {
+          "font-family": "Georgia, serif",
+          "font-size": "0.9em",
+          "font-style": "italic",
+          "color": "#555555",
+          "margin": "1.5em 2em",
+          "padding": "0.5em",
+          "border-left": "3px solid #2C5282",
+          "background-color": "#f8f9fa"
+        }
+      }
+    },
+
+    "LISTA_ITEM": {
+      "semantica": {
+        "tag_html": "li",
+        "nivel_hierarquia": 0,
+        "tipo": "lista",
+        "importancia": "normal"
+      },
+      "odt": {
+        "nome_estilo": "Item de Lista",
+        "fonte": "Liberation Serif",
+        "tamanho": "12pt",
+        "cor": "#000000",
+        "espacamento_linhas": "1.2",
+        "margem_esquerda": "1cm"
+      },
+      "epub": {
+        "classe_css": "lista-item",
+        "seletor": "li.lista-item",
+        "propriedades": {
+          "font-family": "Georgia, serif",
+          "font-size": "1em",
+          "color": "#333333",
+          "line-height": "1.5",
+          "margin-bottom": "0.5em"
+        }
+      }
+    },
+
+    "CODIGO": {
+      "semantica": {
+        "tag_html": "code",
+        "nivel_hierarquia": 0,
+        "tipo": "codigo",
+        "importancia": "especial"
+      },
+      "odt": {
+        "nome_estilo": "Código",
+        "fonte": "Liberation Mono",
+        "tamanho": "10pt",
+        "cor": "#d63384",
+        "fundo": "#f8f9fa",
+        "espacamento_antes": "3pt",
+        "espacamento_depois": "3pt"
+      },
+      "epub": {
+        "classe_css": "codigo",
+        "seletor": "code.codigo",
+        "propriedades": {
+          "font-family": "Monaco, 'Courier New', monospace",
+          "font-size": "0.85em",
+          "color": "#d63384",
+          "background-color": "#f8f9fa",
+          "padding": "0.2em 0.4em",
+          "border-radius": "3px",
+          "border": "1px solid #dee2e6"
+        }
+      }
+    }
+  },
+
+  "configuracoes_globais": {
+    "odt": {
+      "margens": {
+        "superior": "2.5cm",
+        "inferior": "2.5cm",
+        "esquerda": "3cm",
+        "direita": "2cm"
+      },
+      "cabecalho": {
+        "ativo": true,
+        "fonte": "Arial",
+        "tamanho": "10pt"
+      },
+      "rodape": {
+        "ativo": true,
+        "numeracao": true,
+        "fonte": "Arial",
+        "tamanho": "10pt"
+      }
+    },
+    "epub": {
+      "css_global": {
+        "body": {
+          "font-family": "Georgia, serif",
+          "font-size": "100%",
+          "line-height": "1.6",
+          "color": "#333333",
+          "margin": "0",
+          "padding": "1em"
+        },
+        "h1, h2, h3, h4, h5, h6": {
+          "font-family": "Arial, sans-serif",
+          "margin-top": "1.5em",
+          "margin-bottom": "0.8em"
+        },
+        "p": {
+          "margin-bottom": "1em"
+        }
+      },
+      "metadados": {
+        "viewport": "width=device-width, initial-scale=1.0",
+        "charset": "UTF-8"
+      }
+    }
+  },
+
+  "mapeamento_semantico": {
+    "titulos": ["TITULO_PRINCIPAL", "SUBTITULO"],
+    "conteudo": ["CORPO_TEXTO", "CITACAO", "LISTA_ITEM"],
+    "especiais": ["CODIGO"],
+    "hierarquia_navegacao": {
+      "nivel_1": "TITULO_PRINCIPAL",
+      "nivel_2": "SUBTITULO"
+    }
+  }
+}

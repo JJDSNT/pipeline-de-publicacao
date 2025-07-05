@@ -32,7 +32,7 @@ projetos/*/gerado_automaticamente/
 projetos/*/cache/
 projetos/*/input/*/cache/
 
-# Arquivos de manifesto e marcação gerados
+# Arquivos de manifesto e marcação gerados (reconstruíveis)
 projetos/*/gerado_automaticamente/*/manifesto.json
 projetos/*/gerado_automaticamente/*/tags_disponiveis.json
 
@@ -46,6 +46,14 @@ projetos/*/gerado_automaticamente/*/tags_disponiveis.json
 *.html
 *.md
 *.json
+
+# Permitir versionamento de estilos
+!projetos/*/estilos/
+!projetos/*/estilos/*.json
+
+# Permitir entrada de dados versionada
+!projetos/*/input/
+!projetos/*/input/**
 
 # Pasta de build temporária se usada
 build/

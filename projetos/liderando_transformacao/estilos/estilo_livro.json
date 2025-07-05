@@ -1,0 +1,1248 @@
+{
+  "metadata": {
+    "versao": "1.0",
+    "descricao": "Configuração unificada de estilos para ODT e EPUB, baseada em CSS e definições de PyODConverter",
+    "projeto": "liderando_transformacao",
+    "fontes_principais_serif": ["Crimson Text", "serif"],
+    "fontes_principais_sans_serif": ["Fira Sans", "sans-serif"],
+    "fontes_principais_mono": ["Liberation Mono", "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Courier New", "monospace"],
+    "cores_texto": {
+      "principal": "#1a202c",
+      "secundaria": "#2d3748",
+      "suave": "#4a5568",
+      "mais_suave": "#718096",
+      "mais_clara": "#a0aec0",
+      "titulo_principal": "#1a365d"
+    },
+    "cores_fundo_destaque": {
+      "azul_claro": "#f0f8ff",
+      "laranja_claro": "#fff8f0",
+      "verde_claro": "#f0fff4",
+      "roxo_claro": "#faf5ff",
+      "vermelho_claro": "#fff5f5",
+      "cinza_escuro": "#f7fafc",
+      "amarelo_claro": "#fff3cd",
+      "azul_medio": "#e2e8f0"
+    },
+    "cores_borda_destaque": {
+      "azul": "#3182ce",
+      "laranja": "#ed8936",
+      "verde": "#38a169",
+      "roxo": "#805ad5",
+      "vermelho": "#e53e3e"
+    }
+  },
+
+  "estilos": {
+    "BODY_TEXT": {
+      "semantica": {
+        "tipo": "paragrafo",
+        "descricao": "Texto corrido principal do documento"
+      },
+      "odt": {
+        "nome_estilo": "BodyText",
+        "fonte": "Crimson Text",
+        "tamanho": "11pt",
+        "cor": "#1a202c",
+        "alinhamento": "justificado",
+        "margem_inferior": "0.2cm",
+        "indentacao_primeira_linha": "0.8cm",
+        "altura_linha": "130%",
+        "altura_minima_linha": "0.45cm"
+      },
+      "epub": {
+        "classe_css": "p",
+        "seletor": "body, p",
+        "propriedades": {
+          "font-family": "serif",
+          "font-size": "1em",
+          "line-height": "1.6",
+          "color": "#1a202c",
+          "margin-bottom": "1.2em",
+          "text-align": "left",
+          "text-align-last": "left",
+          "-webkit-hyphens": "auto",
+          "-moz-hyphens": "auto",
+          "hyphens": "auto",
+          "page-break-inside": "avoid"
+        }
+      }
+    },
+    "FIRST_PARAGRAPH": {
+      "semantica": {
+        "tipo": "paragrafo",
+        "descricao": "Primeiro parágrafo de um bloco de texto (sem indentação)"
+      },
+      "odt": {
+        "nome_estilo": "FirstParagraph",
+        "base_estilo": "BodyText",
+        "indentacao_primeira_linha": "0cm"
+      },
+      "epub": {
+        "classe_css": "p",
+        "seletor": "h1 + p, h2 + p, h3 + p, h4 + p, .chapter-header + p",
+        "propriedades": {
+          "margin-top": "0"
+        }
+      }
+    },
+    "DROP_CAP_PARAGRAPH": {
+      "semantica": {
+        "tipo": "paragrafo",
+        "descricao": "Parágrafo com capitular (configurado visualmente no LibreOffice)"
+      },
+      "odt": {
+        "nome_estilo": "DropCapParagraph",
+        "base_estilo": "BodyText"
+      },
+      "epub": {
+        "classe_css": "drop-cap-paragraph",
+        "seletor": "p.drop-cap-paragraph",
+        "propriedades": {
+          "text-indent": "0",
+          "float": "left",
+          "font-size": "3em",
+          "line-height": "1",
+          "padding-right": "0.1em",
+          "margin-top": "0.05em"
+        },
+        "nota": "Capitular precisa de CSS adicional e configuração HTML específica."
+      }
+    },
+    "MAIN_TITLE": {
+      "semantica": {
+        "tag_html": "h1",
+        "nivel_hierarquia": 1,
+        "tipo": "titulo_documento",
+        "importancia": "altissima"
+      },
+      "odt": {
+        "nome_estilo": "MainTitle",
+        "fonte": "Fira Sans",
+        "tamanho": "24pt",
+        "cor": "#1a365d",
+        "negrito": true,
+        "alinhamento": "centro",
+        "margem_inferior": "0.8cm",
+        "margem_superior": "1.2cm",
+        "manter_com_proximo": true,
+        "altura_linha": "120%"
+      },
+      "epub": {
+        "classe_css": "main-title",
+        "seletor": "h1, .main-title",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "2em",
+          "font-weight": "700",
+          "color": "#1a365d",
+          "text-align": "center",
+          "margin-top": "2em",
+          "margin-bottom": "1.5em",
+          "line-height": "1.2",
+          "page-break-after": "avoid"
+        }
+      }
+    },
+    "BOOK_SUBTITLE": {
+      "semantica": {
+        "tipo": "subtitulo_documento",
+        "descricao": "Subtítulo geral do livro, abaixo do título principal"
+      },
+      "odt": {
+        "nome_estilo": "BookSubtitle",
+        "fonte": "Fira Sans",
+        "tamanho": "16pt",
+        "cor": "#4a5568",
+        "negrito": false,
+        "italico": true,
+        "alinhamento": "centro",
+        "margem_inferior": "1.2cm",
+        "margem_superior": "0.4cm",
+        "manter_com_proximo": true,
+        "altura_linha": "130%"
+      },
+      "epub": {
+        "classe_css": "book-subtitle",
+        "seletor": ".book-subtitle",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "1.5em",
+          "font-style": "italic",
+          "color": "#4a5568",
+          "text-align": "center",
+          "margin-top": "0.5em",
+          "margin-bottom": "1.5em",
+          "line-height": "1.3"
+        }
+      }
+    },
+    "TOC_PART": {
+      "semantica": {
+        "tag_html": "h1",
+        "nivel_hierarquia": 1,
+        "tipo": "titulo_sumario",
+        "parte_documento": true
+      },
+      "odt": {
+        "nome_estilo": "TOCPart",
+        "fonte": "Fira Sans",
+        "tamanho": "14pt",
+        "cor": "#1a365d",
+        "negrito": true,
+        "alinhamento": "esquerda",
+        "margem_inferior": "0.4cm",
+        "margem_superior": "0.8cm",
+        "indentacao_esquerda": "0cm"
+      },
+      "epub": {
+        "classe_css": "toc-part",
+        "seletor": ".toc-part",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-weight": "600",
+          "font-size": "1.2em",
+          "color": "#1a365d",
+          "margin-top": "2em",
+          "margin-bottom": "1em",
+          "text-transform": "uppercase",
+          "letter-spacing": "0.1em"
+        }
+      }
+    },
+    "PART_PAGE_NUMBER": {
+      "semantica": {
+        "tipo": "meta_secao",
+        "contexto": "pagina_parte",
+        "descricao": "Número da parte na página de parte"
+      },
+      "odt": {
+        "nome_estilo": "PartPageNumber",
+        "fonte": "Fira Sans",
+        "tamanho": "12pt",
+        "cor": "#718096",
+        "negrito": false,
+        "letras_maiusculas": true,
+        "espacamento_letras": "0.05cm"
+      },
+      "epub": {
+        "classe_css": "part-number",
+        "seletor": ".part-number",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "0.9em",
+          "font-weight": "400",
+          "letter-spacing": "0.2em",
+          "text-transform": "uppercase",
+          "color": "#718096",
+          "margin-bottom": "1em"
+        }
+      }
+    },
+    "PART_PAGE_TITLE": {
+      "semantica": {
+        "tag_html": "h1",
+        "nivel_hierarquia": 1,
+        "tipo": "titulo_secao",
+        "contexto": "pagina_parte",
+        "importancia": "alta"
+      },
+      "odt": {
+        "nome_estilo": "PartPageTitle",
+        "fonte": "Fira Sans",
+        "tamanho": "20pt",
+        "cor": "#2d3748",
+        "negrito": true,
+        "alinhamento": "centro"
+      },
+      "epub": {
+        "classe_css": "part-title",
+        "seletor": ".part-title",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "2.5em",
+          "font-weight": "700",
+          "color": "#2d3748",
+          "margin": "0.5em 0",
+          "line-height": "1.2"
+        },
+        "media_queries": {
+          "max-width: 480px": {
+            "font-size": "2em"
+          }
+        }
+      }
+    },
+    "PART_PAGE_SUBTITLE": {
+      "semantica": {
+        "tipo": "subtitulo_secao",
+        "contexto": "pagina_parte"
+      },
+      "odt": {
+        "nome_estilo": "PartPageSubtitle",
+        "fonte": "Fira Sans",
+        "tamanho": "12pt",
+        "cor": "#4a5568",
+        "italico": true,
+        "alinhamento": "centro"
+      },
+      "epub": {
+        "classe_css": "part-subtitle",
+        "seletor": ".part-subtitle",
+        "propriedades": {
+          "font-style": "italic",
+          "font-size": "1.1em",
+          "color": "#4a5568",
+          "max-width": "30em",
+          "margin": "0 auto",
+          "line-height": "1.4"
+        }
+      }
+    },
+    "CHAPTER_TITLE": {
+      "semantica": {
+        "tag_html": "h2",
+        "nivel_hierarquia": 2,
+        "tipo": "titulo_secao",
+        "importancia": "alta"
+      },
+      "odt": {
+        "nome_estilo": "ChapterTitle",
+        "fonte": "Fira Sans",
+        "tamanho": "18pt",
+        "cor": "#2d3748",
+        "negrito": true,
+        "alinhamento": "esquerda",
+        "margem_inferior": "0.6cm",
+        "margem_superior": "1.0cm",
+        "manter_com_proximo": true,
+        "altura_linha": "120%"
+      },
+      "epub": {
+        "classe_css": "chapter-title",
+        "seletor": "h2.chapter-title",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "1.8em",
+          "font-weight": "700",
+          "color": "#2d3748",
+          "margin": "0",
+          "line-height": "1.3"
+        },
+        "media_queries": {
+          "max-width: 480px": {
+            "font-size": "1.5em"
+          }
+        }
+      }
+    },
+    "CHAPTER_SUBTITLE": {
+      "semantica": {
+        "tipo": "subtitulo_secao",
+        "contexto": "capitulo"
+      },
+      "odt": {
+        "nome_estilo": "ChapterSubtitle",
+        "fonte": "Fira Sans",
+        "tamanho": "13pt",
+        "cor": "#4a5568",
+        "italico": true,
+        "alinhamento": "esquerda",
+        "margem_inferior": "0.6cm",
+        "margem_superior": "0cm",
+        "altura_linha": "120%"
+      },
+      "epub": {
+        "classe_css": "chapter-subtitle",
+        "seletor": ".chapter-subtitle",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "1.2em",
+          "font-style": "italic",
+          "color": "#4a5568",
+          "margin-top": "0.5em",
+          "margin-bottom": "0.8em"
+        }
+      }
+    },
+    "TOC_CHAPTER": {
+      "semantica": {
+        "tag_html": "h2",
+        "nivel_hierarquia": 2,
+        "tipo": "titulo_sumario",
+        "parte_documento": false
+      },
+      "odt": {
+        "nome_estilo": "TOCChapter",
+        "fonte": "Fira Sans",
+        "tamanho": "12pt",
+        "cor": "#2d3748",
+        "negrito": "600",
+        "alinhamento": "esquerda",
+        "margem_inferior": "0.2cm",
+        "margem_superior": "0.3cm",
+        "indentacao_esquerda": "1cm"
+      },
+      "epub": {
+        "classe_css": "toc-chapter",
+        "seletor": ".toc-chapter",
+        "propriedades": {
+          "margin": "0.8em 0 0.5em 1em",
+          "font-weight": "600",
+          "color": "#2d3748"
+        }
+      }
+    },
+    "HEADING_2": {
+      "semantica": {
+        "tag_html": "h3",
+        "nivel_hierarquia": 3,
+        "tipo": "titulo_secao",
+        "importancia": "media"
+      },
+      "odt": {
+        "nome_estilo": "Heading2",
+        "fonte": "Fira Sans",
+        "tamanho": "16pt",
+        "cor": "#4a5568",
+        "negrito": "600",
+        "alinhamento": "esquerda",
+        "margem_inferior": "0.5cm",
+        "margem_superior": "0.8cm",
+        "manter_com_proximo": true,
+        "altura_linha": "120%",
+        "borda_inferior": "0.0176cm solid #e2e8f0"
+      },
+      "epub": {
+        "classe_css": "h3",
+        "seletor": "h3",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "1.2em",
+          "font-weight": "600",
+          "color": "#4a5568",
+          "margin-top": "1.8em",
+          "margin-bottom": "0.8em",
+          "page-break-after": "avoid"
+        }
+      }
+    },
+    "TOC_SECTION": {
+      "semantica": {
+        "tag_html": "h3",
+        "nivel_hierarquia": 3,
+        "tipo": "titulo_sumario",
+        "parte_documento": false
+      },
+      "odt": {
+        "nome_estilo": "TOCSection",
+        "fonte": "Fira Sans",
+        "tamanho": "11pt",
+        "cor": "#4a5568",
+        "negrito": false,
+        "alinhamento": "esquerda",
+        "margem_inferior": "0.1cm",
+        "margem_superior": "0.1cm",
+        "indentacao_esquerda": "2cm"
+      },
+      "epub": {
+        "classe_css": "toc-section",
+        "seletor": ".toc-section",
+        "propriedades": {
+          "margin": "0.5em 0 0.3em 2em",
+          "color": "#4a5568"
+        }
+      }
+    },
+    "HEADING_3": {
+      "semantica": {
+        "tag_html": "h4",
+        "nivel_hierarquia": 4,
+        "tipo": "titulo_secao",
+        "importancia": "media"
+      },
+      "odt": {
+        "nome_estilo": "Heading3",
+        "fonte": "Fira Sans",
+        "tamanho": "14pt",
+        "cor": "#4a5568",
+        "negrito": "600",
+        "alinhamento": "esquerda",
+        "margem_inferior": "0.4cm",
+        "margem_superior": "0.6cm",
+        "manter_com_proximo": true,
+        "altura_linha": "120%"
+      },
+      "epub": {
+        "classe_css": "h4",
+        "seletor": "h4",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "1.1em",
+          "font-weight": "600",
+          "color": "#4a5568",
+          "margin-top": "1.5em",
+          "margin-bottom": "0.5em",
+          "page-break-after": "avoid"
+        }
+      }
+    },
+    "TOC_SUBSECTION": {
+      "semantica": {
+        "tag_html": "h4",
+        "nivel_hierarquia": 4,
+        "tipo": "titulo_sumario",
+        "parte_documento": false
+      },
+      "odt": {
+        "nome_estilo": "TOCSubsection",
+        "fonte": "Fira Sans",
+        "tamanho": "10pt",
+        "cor": "#718096",
+        "negrito": false,
+        "alinhamento": "esquerda",
+        "margem_inferior": "0.05cm",
+        "margem_superior": "0.05cm",
+        "indentacao_esquerda": "3cm"
+      },
+      "epub": {
+        "classe_css": "toc-section",
+        "seletor": ".toc-subsection",
+        "propriedades": {
+          "margin": "0.3em 0 0.1em 3em",
+          "color": "#718096"
+        }
+      }
+    },
+    "HEADING_4": {
+      "semantica": {
+        "tag_html": "h5",
+        "nivel_hierarquia": 5,
+        "tipo": "titulo_secao",
+        "importancia": "baixa"
+      },
+      "odt": {
+        "nome_estilo": "Heading4",
+        "fonte": "Fira Sans",
+        "tamanho": "12pt",
+        "cor": "#718096",
+        "negrito": "600",
+        "alinhamento": "esquerda",
+        "margem_inferior": "0.3cm",
+        "margem_superior": "0.4cm",
+        "manter_com_proximo": true,
+        "altura_linha": "120%"
+      },
+      "epub": {
+        "classe_css": "h5",
+        "seletor": "h5",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "1em",
+          "font-weight": "600",
+          "color": "#718096",
+          "margin-top": "1.2em",
+          "margin-bottom": "0.4em",
+          "page-break-after": "avoid"
+        }
+      }
+    },
+    "CONCEPT_TERM": {
+      "semantica": {
+        "tipo": "destaque_inline",
+        "funcao": "termo_tecnico"
+      },
+      "odt": {
+        "nome_estilo": "ConceptTerm",
+        "fonte": "Crimson Text",
+        "negrito": true,
+        "cor": "#2b6cb0",
+        "cor_fundo": "#f0f8ff"
+      },
+      "epub": {
+        "classe_css": "concept-term",
+        "seletor": ".concept-term",
+        "propriedades": {
+          "background-color": "#bee3f8",
+          "color": "#2b6cb0",
+          "padding": "0.15em 0.3em",
+          "border-radius": "0.25em",
+          "font-weight": "600",
+          "white-space": "nowrap"
+        },
+        "media_queries": {
+          "prefers-color-scheme: dark": {
+            "background-color": "#2d3748",
+            "color": "#90cdf4"
+          }
+        }
+      }
+    },
+    "FOREIGN_TERM": {
+      "semantica": {
+        "tipo": "destaque_inline",
+        "funcao": "termo_estrangeiro"
+      },
+      "odt": {
+        "nome_estilo": "ForeignTerm",
+        "fonte": "Crimson Text",
+        "italico": true,
+        "cor": "#4a5568",
+        "cor_fundo": "#f8f9fa"
+      },
+      "epub": {
+        "classe_css": "foreign-term",
+        "seletor": ".foreign-term",
+        "propriedades": {
+          "font-style": "italic",
+          "color": "#4a5568",
+          "background-color": "#f7fafc",
+          "padding": "0.1em 0.25em",
+          "border-radius": "0.2em"
+        },
+        "media_queries": {
+          "prefers-color-scheme: dark": {
+            "background-color": "#2d3748",
+            "color": "#cbd5e0"
+          }
+        }
+      }
+    },
+    "CODE_INLINE": {
+      "semantica": {
+        "tipo": "destaque_inline",
+        "funcao": "codigo_inline"
+      },
+      "odt": {
+        "nome_estilo": "CodeInline",
+        "fonte": "Liberation Mono",
+        "tamanho": "10pt",
+        "cor": "#d63384",
+        "cor_fundo": "#f8f9fa"
+      },
+      "epub": {
+        "classe_css": "code",
+        "seletor": "code, .code",
+        "propriedades": {
+          "font-family": "\"SF Mono\", \"Monaco\", \"Inconsolata\", \"Roboto Mono\", \"Courier New\", monospace",
+          "background-color": "#2d3748",
+          "color": "#e2e8f0",
+          "padding": "0.25em 0.5em",
+          "border-radius": "0.3em",
+          "font-size": "0.9em",
+          "word-break": "break-all"
+        }
+      }
+    },
+    "URL_TEXT": {
+      "semantica": {
+        "tipo": "destaque_inline",
+        "funcao": "url_texto"
+      },
+      "odt": {
+        "nome_estilo": "URLText",
+        "fonte": "Liberation Mono",
+        "tamanho": "10pt",
+        "cor": "#2d3748",
+        "cor_fundo": "#f1f5f9",
+        "borda": "1px solid #cbd5e0"
+      },
+      "epub": {
+        "classe_css": "url",
+        "seletor": ".url",
+        "propriedades": {
+          "font-family": "\"SF Mono\", \"Monaco\", \"Inconsolata\", \"Roboto Mono\", \"Courier New\", monospace",
+          "background-color": "#f1f5f9",
+          "color": "#2d3748",
+          "padding": "0.25em 0.5em",
+          "border-radius": "0.3em",
+          "font-size": "0.9em",
+          "border": "1px solid #cbd5e0",
+          "word-break": "break-all"
+        }
+      }
+    },
+    "EMPHASIS": {
+      "semantica": {
+        "tipo": "destaque_inline",
+        "funcao": "enfase"
+      },
+      "odt": {
+        "nome_estilo": "Emphasis",
+        "fonte": "Crimson Text",
+        "italico": true,
+        "cor": "#2d3748"
+      },
+      "epub": {
+        "classe_css": "em",
+        "seletor": "em, i",
+        "propriedades": {
+          "font-style": "italic"
+        }
+      }
+    },
+    "STRONG": {
+      "semantica": {
+        "tipo": "destaque_inline",
+        "funcao": "negrito"
+      },
+      "odt": {
+        "nome_estilo": "Strong",
+        "fonte": "Crimson Text",
+        "negrito": true,
+        "cor": "#2d3748"
+      },
+      "epub": {
+        "classe_css": "strong",
+        "seletor": "strong, b",
+        "propriedades": {
+          "font-weight": "600",
+          "color": "#2d3748"
+        }
+      }
+    },
+    "HIGHLIGHT": {
+      "semantica": {
+        "tipo": "destaque_inline",
+        "funcao": "marcacao"
+      },
+      "odt": {
+        "nome_estilo": "Highlight",
+        "fonte": "Crimson Text",
+        "cor_fundo": "#fff3cd",
+        "cor": "#856404"
+      },
+      "epub": {
+        "classe_css": "highlight",
+        "seletor": ".highlight",
+        "propriedades": {
+          "background-color": "#fff3cd",
+          "color": "#856404"
+        }
+      }
+    },
+    "SUBSCRIPT": {
+      "semantica": {
+        "tipo": "destaque_inline",
+        "funcao": "subscrito"
+      },
+      "odt": {
+        "nome_estilo": "Subscript",
+        "fonte": "Crimson Text",
+        "tamanho": "8pt",
+        "posicao_texto": "sub"
+      },
+      "epub": {
+        "classe_css": "subscript",
+        "seletor": "sub",
+        "propriedades": {
+          "font-size": "0.8em",
+          "vertical-align": "sub"
+        }
+      }
+    },
+    "SUPERSCRIPT": {
+      "semantica": {
+        "tipo": "destaque_inline",
+        "funcao": "sobrescrito"
+      },
+      "odt": {
+        "nome_estilo": "Superscript",
+        "fonte": "Crimson Text",
+        "tamanho": "8pt",
+        "posicao_texto": "super"
+      },
+      "epub": {
+        "classe_css": "superscript",
+        "seletor": "sup",
+        "propriedades": {
+          "font-size": "0.8em",
+          "vertical-align": "super"
+        }
+      }
+    },
+    "CONCEPT_BOX": {
+      "semantica": {
+        "tipo": "bloco_destaque",
+        "funcao": "conceito_importante"
+      },
+      "odt": {
+        "nome_estilo": "ConceptBox",
+        "fonte": "Crimson Text",
+        "tamanho": "10.5pt",
+        "cor": "#1a202c",
+        "margem_inferior": "0.5cm",
+        "margem_superior": "0.5cm",
+        "margem_esquerda": "0.8cm",
+        "margem_direita": "0.4cm",
+        "borda_esquerda": "0.15cm solid #3182ce",
+        "cor_fundo": "#f0f8ff",
+        "altura_linha": "140%"
+      },
+      "epub": {
+        "classe_css": "concept-box",
+        "seletor": ".concept-box",
+        "propriedades": {
+          "background": "linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%)",
+          "border-left": "0.25em solid #38a169",
+          "padding": "1.5em",
+          "margin": "1.5em 0",
+          "border-radius": "0 0.5em 0.5em 0",
+          "page-break-inside": "avoid"
+        }
+      }
+    },
+    "ALERT_BOX": {
+      "semantica": {
+        "tipo": "bloco_destaque",
+        "funcao": "alerta"
+      },
+      "odt": {
+        "nome_estilo": "AlertBox",
+        "fonte": "Crimson Text",
+        "tamanho": "10.5pt",
+        "cor": "#1a202c",
+        "margem_inferior": "0.5cm",
+        "margem_superior": "0.5cm",
+        "margem_esquerda": "0.8cm",
+        "margem_direita": "0.4cm",
+        "borda_esquerda": "0.15cm solid #ed8936",
+        "cor_fundo": "#fff8f0",
+        "altura_linha": "140%"
+      },
+      "epub": {
+        "classe_css": "alert-box",
+        "seletor": ".alert-box",
+        "propriedades": {
+          "background": "linear-gradient(135deg, #fffaf0 0%, #fbd38d 100%)",
+          "border-left": "0.25em solid #ed8936",
+          "padding": "1.5em",
+          "margin": "1.5em 0",
+          "border-radius": "0 0.5em 0.5em 0",
+          "page-break-inside": "avoid"
+        }
+      }
+    },
+    "EXAMPLE_BOX": {
+      "semantica": {
+        "tipo": "bloco_destaque",
+        "funcao": "exemplo"
+      },
+      "odt": {
+        "nome_estilo": "ExampleBox",
+        "fonte": "Crimson Text",
+        "tamanho": "10.5pt",
+        "cor": "#1a202c",
+        "margem_inferior": "0.5cm",
+        "margem_superior": "0.5cm",
+        "margem_esquerda": "0.8cm",
+        "margem_direita": "0.4cm",
+        "borda_esquerda": "0.15cm solid #38a169",
+        "cor_fundo": "#f0fff4",
+        "altura_linha": "140%"
+      },
+      "epub": {
+        "classe_css": "example-box",
+        "seletor": ".example-box",
+        "propriedades": {
+          "background": "linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%)",
+          "border-left": "0.25em solid #38a169",
+          "padding": "1.5em",
+          "margin": "1.5em 0",
+          "border-radius": "0 0.5em 0.5em 0",
+          "page-break-inside": "avoid"
+        }
+      }
+    },
+    "TIP_BOX": {
+      "semantica": {
+        "tipo": "bloco_destaque",
+        "funcao": "dica"
+      },
+      "odt": {
+        "nome_estilo": "TipBox",
+        "fonte": "Crimson Text",
+        "tamanho": "10.5pt",
+        "cor": "#1a202c",
+        "margem_inferior": "0.5cm",
+        "margem_superior": "0.5cm",
+        "margem_esquerda": "0.8cm",
+        "margem_direita": "0.4cm",
+        "borda_esquerda": "0.15cm solid #805ad5",
+        "cor_fundo": "#faf5ff",
+        "altura_linha": "140%"
+      },
+      "epub": {
+        "classe_css": "tip-box",
+        "seletor": ".tip-box",
+        "propriedades": {
+          "background": "linear-gradient(135deg, #faf5ff 0%, #d6bcfa 100%)",
+          "border-left": "0.25em solid #805ad5",
+          "padding": "1.5em",
+          "margin": "1.5em 0",
+          "border-radius": "0 0.5em 0.5em 0",
+          "page-break-inside": "avoid"
+        }
+      }
+    },
+    "WARNING_BOX": {
+      "semantica": {
+        "tipo": "bloco_destaque",
+        "funcao": "aviso"
+      },
+      "odt": {
+        "nome_estilo": "WarningBox",
+        "fonte": "Crimson Text",
+        "tamanho": "10.5pt",
+        "cor": "#1a202c",
+        "margem_inferior": "0.5cm",
+        "margem_superior": "0.5cm",
+        "margem_esquerda": "0.8cm",
+        "margem_direita": "0.4cm",
+        "borda_esquerda": "0.15cm solid #e53e3e",
+        "cor_fundo": "#fff5f5",
+        "altura_linha": "140%"
+      },
+      "epub": {
+        "classe_css": "warning-box",
+        "seletor": ".warning-box",
+        "propriedades": {
+          "background": "linear-gradient(135deg, #fff5f5 0%, #feb2b2 100%)",
+          "border-left": "0.25em solid #e53e3e",
+          "padding": "1.5em",
+          "margin": "1.5em 0",
+          "border-radius": "0 0.5em 0.5em 0",
+          "page-break-inside": "avoid"
+        }
+      }
+    },
+    "INFO_BOX": {
+      "semantica": {
+        "tipo": "bloco_destaque",
+        "funcao": "informacao"
+      },
+      "odt": {
+        "nome_estilo": "InfoBox",
+        "fonte": "Crimson Text",
+        "tamanho": "10.5pt",
+        "cor": "#1a202c",
+        "margem_inferior": "0.5cm",
+        "margem_superior": "0.5cm",
+        "margem_esquerda": "0.8cm",
+        "margem_direita": "0.4cm",
+        "borda_esquerda": "0.15cm solid #3182ce",
+        "cor_fundo": "#ebf8ff",
+        "altura_linha": "140%"
+      },
+      "epub": {
+        "classe_css": "highlight-box",
+        "seletor": ".highlight-box",
+        "propriedades": {
+          "background": "linear-gradient(135deg, #ebf8ff 0%, #bee3f8 50%, #90cdf4 100%)",
+          "border-left": "0.25em solid #3182ce",
+          "padding": "1.5em",
+          "margin": "1.5em 0",
+          "border-radius": "0 0.5em 0.5em 0",
+          "font-size": "0.95em",
+          "page-break-inside": "avoid"
+        }
+      }
+    },
+    "CODE_BLOCK": {
+      "semantica": {
+        "tipo": "bloco_destaque",
+        "funcao": "bloco_codigo"
+      },
+      "odt": {
+        "nome_estilo": "CodeBlock",
+        "fonte": "Liberation Mono",
+        "tamanho": "10pt",
+        "cor": "#2d3748",
+        "margem_inferior": "0.5cm",
+        "margem_superior": "0.5cm",
+        "margem_esquerda": "0.8cm",
+        "margem_direita": "0.4cm",
+        "borda_esquerda": "0.15cm solid #2d3748",
+        "cor_fundo": "#f7fafc",
+        "altura_linha": "140%"
+      },
+      "epub": {
+        "classe_css": "code-block",
+        "seletor": "pre, .code-block",
+        "propriedades": {
+          "font-family": "\"SF Mono\", \"Monaco\", \"Inconsolata\", \"Roboto Mono\", \"Courier New\", monospace",
+          "background-color": "#2d3748",
+          "color": "#e2e8f0",
+          "padding": "1em",
+          "border-radius": "0.5em",
+          "overflow-x": "auto",
+          "font-size": "0.9em",
+          "line-height": "1.4",
+          "margin": "1.5em 0"
+        }
+      }
+    },
+    "LIST_ITEM": {
+      "semantica": {
+        "tipo": "item_lista",
+        "descricao": "Item base para todos os tipos de lista"
+      },
+      "odt": {
+        "nome_estilo": "ListItem",
+        "fonte": "Crimson Text",
+        "tamanho": "11pt",
+        "cor": "#1a202c",
+        "margem_inferior": "0.1cm",
+        "margem_superior": "0.1cm",
+        "margem_esquerda": "1.2cm",
+        "altura_linha": "140%"
+      },
+      "epub": {
+        "classe_css": "li",
+        "seletor": "li",
+        "propriedades": {
+          "margin-bottom": "0.8em",
+          "line-height": "1.6"
+        }
+      }
+    },
+    "BULLET_LIST": {
+      "semantica": {
+        "tipo": "lista",
+        "funcao": "nao_ordenada"
+      },
+      "odt": {
+        "nome_estilo": "BulletList",
+        "base_estilo": "ListItem",
+        "tipo_lista_lo": "Marcadores"
+      },
+      "epub": {
+        "classe_css": "ul",
+        "seletor": "ul",
+        "propriedades": {
+          "margin": "1em 0 1.5em 0",
+          "padding-left": "2em"
+        }
+      }
+    },
+    "NUMBERED_LIST": {
+      "semantica": {
+        "tipo": "lista",
+        "funcao": "ordenada"
+      },
+      "odt": {
+        "nome_estilo": "NumberedList",
+        "base_estilo": "ListItem",
+        "tipo_lista_lo": "Numeração"
+      },
+      "epub": {
+        "classe_css": "ol",
+        "seletor": "ol",
+        "propriedades": {
+          "margin": "1em 0 1.5em 0",
+          "padding-left": "2em"
+        }
+      }
+    },
+    "CHECK_LIST": {
+      "semantica": {
+        "tipo": "lista",
+        "funcao": "checklist"
+      },
+      "odt": {
+        "nome_estilo": "CheckList",
+        "base_estilo": "ListItem",
+        "tipo_lista_lo": "Caixa de seleção"
+      },
+      "epub": {
+        "classe_css": "checklist",
+        "seletor": ".checklist",
+        "propriedades": {
+          "list-style-type": "none",
+          "padding-left": "1.5em"
+        },
+        "nota": "Requer HTML específico para os checkboxes"
+      }
+    },
+    "QUOTE_BLOCK": {
+      "semantica": {
+        "tag_html": "blockquote",
+        "tipo": "citacao_bloco"
+      },
+      "odt": {
+        "nome_estilo": "Quote",
+        "fonte": "Crimson Text",
+        "tamanho": "10.5pt",
+        "italico": true,
+        "cor": "#4a5568",
+        "alinhamento": "justificado",
+        "margem_inferior": "0.4cm",
+        "margem_superior": "0.4cm",
+        "margem_esquerda": "1.5cm",
+        "margem_direita": "1.5cm",
+        "altura_linha": "140%"
+      },
+      "epub": {
+        "classe_css": "blockquote",
+        "seletor": "blockquote",
+        "propriedades": {
+          "font-style": "italic",
+          "margin": "2em 0",
+          "padding": "1em 0 1em 2em",
+          "color": "#4a5568",
+          "border-left": "0.2em solid #cbd5e0",
+          "background-color": "#f7fafc",
+          "border-radius": "0 0.5em 0.5em 0",
+          "page-break-inside": "avoid"
+        }
+      }
+    },
+    "CAPTION": {
+      "semantica": {
+        "tag_html": "figcaption",
+        "tipo": "legenda",
+        "contexto": "imagem_tabela"
+      },
+      "odt": {
+        "nome_estilo": "Caption",
+        "fonte": "Fira Sans",
+        "tamanho": "9pt",
+        "italico": true,
+        "cor": "#718096",
+        "alinhamento": "centro",
+        "margem_inferior": "0.3cm",
+        "margem_superior": "0.1cm",
+        "altura_linha": "120%"
+      },
+      "epub": {
+        "classe_css": "figcaption",
+        "seletor": "figcaption",
+        "propriedades": {
+          "font-size": "0.9em",
+          "color": "#4a5568",
+          "font-style": "italic",
+          "margin-top": "0.5em",
+          "line-height": "1.4"
+        }
+      }
+    },
+    "FOOTER": {
+      "semantica": {
+        "tipo": "rodape"
+      },
+      "odt": {
+        "nome_estilo": "Footer",
+        "fonte": "Fira Sans",
+        "tamanho": "9pt",
+        "cor": "#a0aec0",
+        "alinhamento": "centro",
+        "altura_linha": "120%"
+      },
+      "epub": {
+        "classe_css": "footer",
+        "seletor": ".footer",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "0.8em",
+          "color": "#a0aec0",
+          "text-align": "center",
+          "margin-top": "2em",
+          "padding-top": "1em",
+          "border-top": "1px solid #e2e8f0"
+        }
+      }
+    },
+    "TOC_TITLE": {
+      "semantica": {
+        "tipo": "titulo_sumario",
+        "parte_documento": true
+      },
+      "odt": {
+        "nome_estilo": "TOCTitle",
+        "fonte": "Fira Sans",
+        "tamanho": "18pt",
+        "cor": "#1a365d",
+        "negrito": true,
+        "alinhamento": "centro",
+        "margem_inferior": "0.8cm",
+        "margem_superior": "1.2cm",
+        "indentacao_esquerda": "0cm"
+      },
+      "epub": {
+        "classe_css": "toc-title",
+        "seletor": ".toc-title",
+        "propriedades": {
+          "font-family": "sans-serif",
+          "font-size": "1.8em",
+          "font-weight": "700",
+          "color": "#1a365d",
+          "text-align": "center",
+          "margin-top": "2em",
+          "margin-bottom": "1.5em"
+        }
+      }
+    },
+    "PAGE_BREAK_STYLE": {
+      "semantica": {
+        "tipo": "controle_layout",
+        "funcao": "quebra_pagina"
+      },
+      "odt": {
+        "nome_estilo": "PageBreakStyle",
+        "quebra_antes": "page"
+      },
+      "epub": {
+        "classe_css": "page-break",
+        "seletor": ".page-break",
+        "propriedades": {
+          "page-break-before": "always"
+        }
+      }
+    },
+    "NO_BREAK": {
+      "semantica": {
+        "tipo": "controle_layout",
+        "funcao": "evitar_quebra"
+      },
+      "odt": {
+        "nome_estilo": "NoBreakStyle",
+        "manter_junto": "sempre"
+      },
+      "epub": {
+        "classe_css": "no-break",
+        "seletor": ".no-break",
+        "propriedades": {
+          "page-break-inside": "avoid"
+        }
+      }
+    },
+    "NARRATIVE_MARKER": {
+      "semantica": {
+        "tipo": "elemento_narrativo",
+        "funcao": "divisor_secao_narrativa"
+      },
+      "odt": {
+        "nome_estilo": "NarrativeMarker",
+        "fonte": "Fira Sans",
+        "tamanho": "10.5pt",
+        "italico": true,
+        "cor": "#718096",
+        "alinhamento": "centro",
+        "margem_inferior": "0.6cm",
+        "margem_superior": "0.6cm",
+        "altura_linha": "120%"
+      },
+      "epub": {
+        "classe_css": "section-break",
+        "seletor": ".section-break",
+        "propriedades": {
+          "text-align": "center",
+          "margin": "3em 0",
+          "color": "#a0aec0",
+          "font-size": "1.5em",
+          "letter-spacing": "0.5em"
+        }
+      }
+    }
+  }
+}
