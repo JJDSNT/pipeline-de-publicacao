@@ -1,4 +1,4 @@
-# scipts/gerar_epub.py
+# scripts/gerar_epub.py
 import argparse
 import json
 from pathlib import Path
@@ -19,7 +19,11 @@ class GeradorEPUB:
 
         for item in json_data.get("conteudo", []):
             tipo = item["tipo"]
-            texto = item["texto"]
+            texto = item.get("texto")
+
+            if not texto:
+                print(f"⚠️ Item com tipo '{tipo}' não contém campo 'texto'. Ignorado.")
+                continue
 
             if tipo == "TITULO_PRINCIPAL":
                 if capitulo_atual:
@@ -97,8 +101,8 @@ class GeradorEPUB:
             f'    <dc:title>{self.metadados.get("titulo", "Livro Digital")}</dc:title>',
             f'    <dc:creator opf:role="aut">{self.metadados.get("autor", "Autor")}</dc:creator>',
             '    <dc:language>pt-BR</dc:language>',
-            '    <dc:date opf:event="publication">2025-01-01</dc:date>',
-            '    <meta name="cover" content="cover-image"/>',
+            f'    <dc:date opf:event="publication">{self.metadados.get("data_publicacao", "2025-01-01")}</dc:date>',
+  
             '  </metadata>',
             '  <manifest>',
             '    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>',
@@ -162,16 +166,15 @@ def main():
     parser.add_argument("--idioma", required=True)
     args = parser.parse_args()
 
-    projeto = args.projeto
+    base = Path("projetos") / args.projeto
     idioma = args.idioma
-
-    base = Path("projetos") / projeto
     config_path = base / "config.json"
     config = json.loads(config_path.read_text(encoding="utf-8"))
 
     json_path = base / "gerado_automaticamente" / idioma / "livro_estruturado.json"
     estilos_path = base / config["estilos"]
-    epub_path = base / "output" / "livro_completo.epub"
+    epub_path = base / "output" / idioma / "livro_completo.epub"
+    epub_path.parent.mkdir(parents=True, exist_ok=True)
 
     if not json_path.exists():
         print(f"❌ Arquivo JSON estruturado não encontrado: {json_path}")
@@ -184,8 +187,9 @@ def main():
     gerador.processar_json_estruturado(json_data)
 
     metadados = {
-        "titulo": json_data.get("titulo", "Livro Digital"),
-        "autor": json_data.get("autor", "Autor Desconhecido")
+        "titulo": config.get("titulo", "Livro Digital"),
+        "autor": config.get("autor", "Autor Desconhecido"),
+        "data_publicacao": config.get("data_publicacao", "2025-01-01")
     }
 
     gerador.gerar_epub(epub_path, metadados)

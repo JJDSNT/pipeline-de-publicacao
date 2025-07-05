@@ -105,6 +105,7 @@ def main():
         ("Gerar Tags e Referências", "scripts/gerar_tags_e_referencia.py"),
         ("Validar Estilos", "scripts/validar_estilos.py"),
         ("Gerar ePub", "scripts/gerar_epub.py"),
+        ("Validar ePub", "scripts/validar_epub.py"),
         ("Renderizar JSON → FODT", "scripts/renderizar_json_para_fodt.py"),
         ("Exportar FODT → ODT/PDF", "scripts/consolidar_e_exportar_odt_pdf.py"),
     ]
