@@ -43,22 +43,22 @@ def processar_arquivo_md(caminho_md: Path, tipo_forcado: str = None) -> dict:
     }
 
 
-def processar_diretorio(origem: Path, destino: Path, tipo: str = None) -> None:
+def processar_diretorio(origem: Path, destino: Path, tipo: str = None) -> list[dict]:
     if not origem.exists():
         print(f"⚠️ Diretório não encontrado: {origem}")
-        return
+        return []
 
     destino.mkdir(parents=True, exist_ok=True)
+    resultados = []
 
-    for caminho_md in origem.glob("*.md"):
+    for caminho_md in sorted(origem.glob("*.md")):
         try:
             tipo_dinamico = tipo
             if tipo == "componente":
                 tipo_dinamico = caminho_md.stem.lower()
 
-            estrutura = processar_arquivo_md(
-                caminho_md, tipo_forcado=tipo_dinamico
-            )
+            estrutura = processar_arquivo_md(caminho_md, tipo_forcado=tipo_dinamico)
+            resultados.append(estrutura)
 
             nome_json = caminho_md.stem + ".json"
             caminho_json = destino / nome_json
@@ -73,48 +73,44 @@ def processar_diretorio(origem: Path, destino: Path, tipo: str = None) -> None:
         except Exception as e:
             print(f"❌ Erro em {caminho_md.name}: {e}")
 
+    return resultados
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Parse arquivos .md em JSON estruturado"
     )
-    parser.add_argument(
-        "--projeto",
-        default="liderando_transformacao",
-        help="Nome do projeto",
-    )
-    parser.add_argument(
-        "--idioma",
-        default="pt_br",
-        help="Idioma do conteúdo",
-    )
+    parser.add_argument("--projeto", default="liderando_transformacao", help="Nome do projeto")
+    parser.add_argument("--idioma", default="pt_br", help="Idioma do conteúdo")
     args = parser.parse_args()
 
     base = Path(__file__).resolve().parents[1]
-    raiz = base / "projetos" / args.projeto / "gerado_automaticamente" / args.idioma
+    raiz = base / "projetos" / args.projeto
+    origem_md = raiz / "gerado_automaticamente" / args.idioma / "md"
+    destino_json = raiz / "gerado_automaticamente" / args.idioma / "json"
+    destino_json.mkdir(parents=True, exist_ok=True)
 
     print()
-    print(
-        "📦 Convertendo arquivos .md para JSON "
-        f"no projeto '{args.projeto}' ({args.idioma})"
+    print(f"📦 Convertendo arquivos .md para JSON no projeto '{args.projeto}' ({args.idioma})")
+
+    componentes = processar_diretorio(origem_md / "componentes", destino_json / "componentes", tipo="componente")
+    partes = processar_diretorio(origem_md / "partes", destino_json / "partes", tipo="parte")
+    capitulos = processar_diretorio(origem_md / "capitulos", destino_json / "capitulos", tipo="capitulo")
+
+    # 🔧 Consolidar em único JSON estruturado
+    json_consolidado = {
+        "projeto": args.projeto,
+        "idioma": args.idioma,
+        "conteudo": componentes + partes + capitulos,
+    }
+
+    caminho_consolidado = raiz / "gerado_automaticamente" / args.idioma / "livro_estruturado.json"
+    caminho_consolidado.write_text(
+        json.dumps(json_consolidado, indent=2, ensure_ascii=False),
+        encoding="utf-8"
     )
 
-    processar_diretorio(
-        raiz / "md" / "capitulos",
-        raiz / "json" / "capitulos",
-        tipo="capitulo",
-    )
-    processar_diretorio(
-        raiz / "md" / "partes",
-        raiz / "json" / "partes",
-        tipo="parte",
-    )
-    processar_diretorio(
-        raiz / "md" / "componentes",
-        raiz / "json" / "componentes",
-        tipo="componente",
-    )
-
+    print(f"\n📘 JSON consolidado salvo em: {caminho_consolidado}")
     print("\n✅ Parsing finalizado.\n")
 
 
