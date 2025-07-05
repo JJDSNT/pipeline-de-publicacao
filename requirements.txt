@@ -1,0 +1,4 @@
+pypandoc
+jinja2
+python-docx
+markdown
