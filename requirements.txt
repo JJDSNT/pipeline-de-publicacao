@@ -1,4 +1,5 @@
-pypandoc
-markdown
 ebooklib
+jinja2
+markdown
+pypandoc
 pypub

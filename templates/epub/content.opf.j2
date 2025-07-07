@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="BookId"
+         prefix="rendition: http://www.idpf.org/vocab/rendition/# ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/v2/">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:dcterms="http://purl.org/dc/terms/"
+            xmlns:media="http://www.idpf.org/epub/vocab/overlays/#">
+    <dc:identifier id="BookId">urn:uuid:12345678-1234-1234-1234-123456789012</dc:identifier>
+    <dc:title>{{ titulo }}</dc:title>
+    <dc:creator id="creator">{{ autor }}</dc:creator>
+    <meta refines="#creator" property="role" scheme="marc:relators">aut</meta>
+    <dc:language>{{ idioma }}</dc:language>
+    <meta property="dcterms:modified">{{ data }}T12:00:00Z</meta>
+  </metadata>
+  <manifest>
+    {% for item in manifest_items -%}
+    <item id="{{ item.id }}" href="{{ item.href }}" media-type="{{ item.media_type }}"{% if item.properties is defined %} properties="{{ item.properties }}"{% endif %}/>
+    {% endfor %}
+  </manifest>
+  <spine>
+    {% for item in spine_items -%}
+    <itemref idref="{{ item.idref }}"{% if item.linear is defined %} linear="{{ item.linear }}"{% endif %}/>
+    {% endfor %}
+  </spine>
+</package>

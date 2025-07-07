@@ -4,6 +4,28 @@ import argparse
 from pathlib import Path
 
 
+def ajustar_titulo_md(caminho_md: Path) -> None:
+    conteudo = caminho_md.read_text(encoding="utf-8")
+    linhas = conteudo.splitlines()
+    novas_linhas = []
+    titulos_aplicados = 0
+
+    for linha in linhas:
+        if linha.strip() == "":
+            novas_linhas.append(linha)
+        elif titulos_aplicados == 0:
+            novas_linhas.append("# " + linha.strip())
+            titulos_aplicados += 1
+        elif titulos_aplicados == 1:
+            novas_linhas.append("## " + linha.strip())
+            titulos_aplicados += 1
+        else:
+            novas_linhas.append(linha)
+
+    caminho_md.write_text("\n".join(novas_linhas), encoding="utf-8")
+
+
+
 def converter_odt_para_md(arquivo_odt: Path, destino_md: Path) -> None:
     print(f"🟡 Convertendo: {arquivo_odt.name} → {destino_md.relative_to(Path.cwd())}")
     pypandoc.convert_file(
@@ -12,6 +34,7 @@ def converter_odt_para_md(arquivo_odt: Path, destino_md: Path) -> None:
         outputfile=str(destino_md),
         extra_args=["--wrap=none"],
     )
+    ajustar_titulo_md(destino_md)
 
 
 def processar_diretorio(origem: Path, destino: Path) -> None:

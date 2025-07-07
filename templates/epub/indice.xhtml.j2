@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="{{ idioma }}" lang="{{ idioma }}">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sumário</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav epub:type="toc" id="toc-visual">
+      <h1>Sumário</h1>
+      <ol>
+        {% for cap in capitulos_para_indice %}
+        <li><a href="{{ cap.href }}">{{ cap.titulo }}</a></li>
+        {% endfor %}
+      </ol>
+    </nav>
+    <p style="display:none;"><a href="nav.xhtml">Sumário Técnico</a></p>
+  </body>
+</html>

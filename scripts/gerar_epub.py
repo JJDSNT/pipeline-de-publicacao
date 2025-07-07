@@ -1,8 +1,9 @@
-# scripts/gerar_epub.py
 import argparse
 import json
-from pathlib import Path
 import zipfile
+from pathlib import Path
+
+from jinja2 import Environment, FileSystemLoader
 
 
 def gerar_epub(projeto: str, idioma: str):
@@ -10,6 +11,7 @@ def gerar_epub(projeto: str, idioma: str):
     html_dir = base_dir / "gerado_automaticamente" / idioma / "html" / "capitulos"
     output_path = base_dir / "output" / idioma / "livro_completo.epub"
     config_path = base_dir / "config.json"
+    templates_dir = Path("templates") / "epub"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     if not html_dir.exists():
@@ -20,10 +22,21 @@ def gerar_epub(projeto: str, idioma: str):
         print(f"❌ Arquivo de configuração não encontrado: {config_path}")
         return
 
+    env = Environment(loader=FileSystemLoader(templates_dir), autoescape=True)
+
     config = json.loads(config_path.read_text(encoding="utf-8"))
     titulo = config.get("titulo", "Livro Digital")
     autor = config.get("autor", "Autor Desconhecido")
     data_pub = config.get("data_publicacao", "2025-01-01")
+
+    # Normalização do Idioma para IETF BCP 47 (ex: pt-BR)
+    idioma_cfg = config.get("idioma", idioma)
+    if idioma_cfg.lower() == "pt_br":
+        idioma_final = "pt-BR"
+    elif idioma_cfg.lower() == "en":
+        idioma_final = "en-US"
+    else:
+        idioma_final = idioma_cfg
 
     html_files = sorted(html_dir.glob("*.html"))
     if not html_files:
@@ -31,24 +44,20 @@ def gerar_epub(projeto: str, idioma: str):
         return
 
     with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as epub:
-        # Requisitos EPUB
         epub.writestr("mimetype", "application/epub+zip", compress_type=zipfile.ZIP_STORED)
-        container = '''<?xml version="1.0"?>
-<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
-    <rootfiles>
-        <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
-    </rootfiles>
-</container>'''
-        epub.writestr("META-INF/container.xml", container)
 
-        # Gerar estilos básicos
-        css = "body { font-family: serif; line-height: 1.6; margin: 5%; }"
-        epub.writestr("OEBPS/styles.css", css)
+        container_tpl = env.get_template("container.xml.j2")
+        epub.writestr("META-INF/container.xml", container_tpl.render())
 
-        # Copiar os capítulos
+        css_content = "body { font-family: serif; line-height: 1.6; margin: 5%; }"
+        epub.writestr("OEBPS/styles.css", css_content.encode("utf-8"))
+
         manifest_items = []
         spine_items = []
-        navpoints = []
+        nav_items_para_nav_xhtml = []  # Para o sumário técnico (nav.xhtml)
+        capitulos_para_indice_visual = []  # Para a página de índice visual (indice.xhtml)
+
+        manifest_items.append({"id": "css", "href": "styles.css", "media_type": "text/css"})
 
         for i, html_file in enumerate(html_files, 1):
             id_cap = f"cap{i:02d}"
@@ -56,50 +65,65 @@ def gerar_epub(projeto: str, idioma: str):
             html_content = html_file.read_text(encoding="utf-8")
 
             epub.writestr(f"OEBPS/{nome_saida}", html_content)
-            manifest_items.append(f'<item id="{id_cap}" href="{nome_saida}" media-type="application/xhtml+xml"/>')
-            spine_items.append(f'<itemref idref="{id_cap}"/>')
-            navpoints.append(f'''
-      <navPoint id="navPoint-{i}" playOrder="{i}">
-        <navLabel><text>Capítulo {i}</text></navLabel>
-        <content src="{nome_saida}"/>
-      </navPoint>''')
+            manifest_items.append({"id": id_cap, "href": nome_saida, "media_type": "application/xhtml+xml"})
+            spine_items.append({"idref": id_cap})
 
-        # Gerar TOC
-        toc_ncx = f'''<?xml version="1.0" encoding="UTF-8"?>
-<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
-  <head>
-    <meta name="dtb:uid" content="urn:uuid:12345678-1234-1234-1234-123456789012"/>
-    <meta name="dtb:depth" content="1"/>
-    <meta name="dtb:totalPageCount" content="0"/>
-    <meta name="dtb:maxPageNumber" content="0"/>
-  </head>
-  <docTitle><text>{titulo}</text></docTitle>
-  <navMap>
-{''.join(navpoints)}
-  </navMap>
-</ncx>'''
-        epub.writestr("OEBPS/toc.ncx", toc_ncx)
+            # Popula a lista para o sumário técnico (nav.xhtml)
+            nav_items_para_nav_xhtml.append({
+                "label": f"Capítulo {i}",
+                "src": nome_saida
+            })
+            # Popula a lista para a página de índice visual (indice.xhtml)
+            capitulos_para_indice_visual.append({
+                "titulo": f"Capítulo {i}",
+                "href": nome_saida
+            })
 
-        # Gerar content.opf
-        content_opf = f'''<?xml version="1.0" encoding="UTF-8"?>
-<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="BookId">
-  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
-    <dc:identifier id="BookId">urn:uuid:12345678-1234-1234-1234-123456789012</dc:identifier>
-    <dc:title>{titulo}</dc:title>
-    <dc:creator opf:role="aut">{autor}</dc:creator>
-    <dc:language>pt-BR</dc:language>
-    <dc:date>{data_pub}</dc:date>
-  </metadata>
-  <manifest>
-    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
-    <item id="css" href="styles.css" media-type="text/css"/>
-    {''.join(manifest_items)}
-  </manifest>
-  <spine toc="ncx">
-    {''.join(spine_items)}
-  </spine>
-</package>'''
-        epub.writestr("OEBPS/content.opf", content_opf)
+        # --- Gerar a página de Índice/Sumário Visual (indice.xhtml) ---
+        # Esta página será o sumário que o leitor verá. Ela é linear.
+        indice_tpl = env.get_template("indice.xhtml.j2")
+        indice_content = indice_tpl.render(
+            titulo=titulo,
+            idioma=idioma_final,
+            capitulos_para_indice=capitulos_para_indice_visual # Passa os dados para o template
+        )
+        epub.writestr("OEBPS/indice.xhtml", indice_content)
+        manifest_items.append({
+            "id": "indice",
+            "href": "indice.xhtml",
+            "media_type": "application/xhtml+xml"
+            # Opcional: properties="rendition:layout-pre-paginated" se for um layout fixo
+            # Opcional: properties="nav" se este for o único TOC e não houver nav.xhtml separado (não recomendado para EPUB 3.x)
+        })
+        # Adicionar o índice no início da spine, como um item linear
+        spine_items.insert(0, {"idref": "indice"})
+
+
+        # --- Gerar o nav.xhtml (o sumário técnico/OCN - OPF Conventional Navigation) ---
+        # Este arquivo ainda é necessário e terá a propriedade "nav" no manifest.
+        # Ele não precisa ser linkado diretamente no conteúdo visível se o indice.xhtml for o sumário principal.
+        nav_tpl = env.get_template("nav.xhtml.j2")
+        nav_content = nav_tpl.render(titulo=titulo, nav_items=nav_items_para_nav_xhtml, idioma=idioma_final)
+        epub.writestr("OEBPS/nav.xhtml", nav_content)
+        
+        manifest_items.append({
+            "id": "nav",
+            "href": "nav.xhtml",
+            "media_type": "application/xhtml+xml",
+            "properties": "nav"  # Essencial para EPUB 3.x, designa este como o sumário técnico
+        })
+        spine_items.append({"idref": "nav", "linear": "no"})  # nav.xhtml é non-linear
+
+        # content.opf via template
+        opf_tpl = env.get_template("content.opf.j2")
+        epub.writestr("OEBPS/content.opf", opf_tpl.render(
+            titulo=titulo,
+            autor=autor,
+            data=data_pub,
+            idioma=idioma_final,
+            manifest_items=manifest_items,
+            spine_items=spine_items,
+        ))
 
     print(f"✅ EPUB gerado com sucesso: {output_path}")
 
@@ -107,7 +131,7 @@ def gerar_epub(projeto: str, idioma: str):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--projeto", required=True)
-    parser.add_argument("--idioma", default="pt_br")
+    parser.add_argument("--idioma", default="pt-BR")
     args = parser.parse_args()
 
     gerar_epub(args.projeto, args.idioma)
