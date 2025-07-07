@@ -1,10 +1,11 @@
+# scripts/converter_odt_para_md.py
 import pypandoc
 import argparse
 from pathlib import Path
 
 
 def converter_odt_para_md(arquivo_odt: Path, destino_md: Path) -> None:
-    print(f"Convertendo: {arquivo_odt.name} -> {destino_md.name}")
+    print(f"🟡 Convertendo: {arquivo_odt.name} → {destino_md.relative_to(Path.cwd())}")
     pypandoc.convert_file(
         str(arquivo_odt),
         to="markdown",

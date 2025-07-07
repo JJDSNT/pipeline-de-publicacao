@@ -1,3 +1,4 @@
+# scripts/gerar_manifesto.py
 import json
 from pathlib import Path
 import argparse
@@ -87,7 +88,7 @@ def gerar_manifesto(raiz_projeto: Path, idioma: str):
     manifest_path = raiz_projeto / "gerado_automaticamente" / idioma / "manifesto.json"
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(json.dumps(manifesto, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"✅ Manifesto gerado: {manifest_path}")
+    print(f"✅ Manifesto gerado: {manifest_path.resolve().relative_to(Path.cwd())}")
 
 
 def main():

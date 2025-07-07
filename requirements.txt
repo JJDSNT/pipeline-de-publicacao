@@ -1,4 +1,4 @@
 pypandoc
-jinja2
-python-docx
 markdown
+ebooklib
+pypub

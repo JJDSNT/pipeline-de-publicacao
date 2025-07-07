@@ -1,3 +1,4 @@
+# scripts/build_pipeline.py
 import argparse
 import subprocess
 from pathlib import Path
@@ -53,14 +54,14 @@ def limpar_output(raiz: Path, idioma: str, log_path: Path):
     """Remove arquivos desnecessários do output, mantendo apenas os finais"""
     output_dir = raiz / "output"
     output_idioma = output_dir / idioma
-    
+
     # Arquivos que devem ser mantidos
     arquivos_finais = [
         "livro_completo.fodt",
-        "livro_completo.odt", 
+        "livro_completo.odt",
         "livro_completo.pdf"
     ]
-    
+
     try:
         # Mover arquivos finais da raiz para o diretório do idioma
         for arquivo in arquivos_finais:
@@ -70,15 +71,15 @@ def limpar_output(raiz: Path, idioma: str, log_path: Path):
                 output_idioma.mkdir(parents=True, exist_ok=True)
                 shutil.move(str(origem), str(destino))
                 log(f"📦 Movido: {arquivo} → {idioma}/", log_path)
-        
+
         # Remover arquivos individuais desnecessários
         fodt_individuais = output_idioma / "fodt"
         if fodt_individuais.exists():
             shutil.rmtree(fodt_individuais)
             log(f"🗑️ Removido: {idioma}/fodt/ (arquivos individuais)", log_path)
-        
+
         log("✅ Limpeza do output concluída", log_path)
-        
+
     except Exception as e:
         log(f"⚠️ Erro na limpeza: {e}", log_path)
 
@@ -104,6 +105,7 @@ def main():
         ("Converter MD → JSON", "scripts/parse_para_json.py"),
         ("Gerar Tags e Referências", "scripts/gerar_tags_e_referencia.py"),
         ("Validar Estilos", "scripts/validar_estilos.py"),
+        ("Converter MD → HTML", "scripts/md_para_html.py"),
         ("Gerar ePub", "scripts/gerar_epub.py"),
         ("Validar ePub", "scripts/validar_epub.py"),
         ("Renderizar JSON → FODT", "scripts/renderizar_json_para_fodt.py"),

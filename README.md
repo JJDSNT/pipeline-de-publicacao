@@ -1,244 +1,153 @@
 # 🚀 Pipeline de Publicação Editorial
 
-> Uma pipeline automatizada, modular e extensível para transformar arquivos `.odt` em publicações profissionais nos formatos `.pdf` e `.epub`, com marcação semântica por LLM, estilos configuráveis, cache por hash, paralelismo, validações e suporte completo a workflows com Git e Docker.
+> Uma pipeline automatizada, modular e extensível para transformar arquivos `.odt` em publicações profissionais no formato `.epub` (e futuramente `.pdf`), usando conversões determinísticas, marcação limpa em Markdown e empacotamento controlado em HTML.
 
 ---
 
 ## ⚙️ Arquitetura Geral
 
-Esta pipeline está organizada em **duas grandes etapas**:
+A pipeline está organizada em três etapas principais:
 
-1. **Marcação Semântica com LLM** — conversão `.odt` → `.md`, marcação com IA, validação e parsing para JSON.
-2. **Formatação e Publicação** — aplicação de estilos com templates `jinja2` e geração de `.fodt`, `.html`, `.pdf`, `.epub`.
+1. **Conversão de `.odt` para `.md`** — geração de arquivos Markdown por capítulo.  
+2. **Transformação de `.md` para `.html`** — um arquivo HTML por capítulo ou seção.  
+3. **Montagem do EPUB final** — com capa, sumário, partes, capítulos e extras, conforme estrutura de livro técnico.
 
 ---
 
-## 🧩 Etapa 1 — Marcação Semântica com LLM
+## 🧩 Etapa 1 — Conversão `.odt` → `.md`
 
 ### 🎯 Objetivo
 
-Transformar documentos `.odt` em arquivos `.md` com **marcações semânticas explícitas** (`[TITULO1]`, `[CORPO_DO_TEXTO]`, etc.), usando modelos LLM locais via Ollama, com validação e transformação para JSON estruturado.
+Extrair conteúdo limpo e estruturado de arquivos `.odt`, mantendo títulos, listas e ênfases, para edição e organização futura.
+
+### 🛠️ Ferramenta
+
+- `pandoc` via CLI ou `pypandoc`
+
+### 📁 Estrutura
+
+input/pt_br/capitulos/*.odt  
+↓  
+gerado_automaticamente/pt_br/markdown/*.md
 
 ---
 
-### 📦 Estrutura
-
-```
-parte1_marcacao_semantica/
-├── scripts/
-│   ├── converter_odt_para_md.py
-│   ├── marcar_com_llm.py
-│   ├── validar_marcacao.py
-│   ├── parse_para_json.py
-│   ├── prompt.py
-│   ├── tags.py
-│   ├── helpers.py
-│   └── fallback.py
-│
-├── entrada/odt/
-├── gerado_automaticamente/
-├── saida/
-│   ├── texto_extraido/
-│   ├── texto_marcado/
-│   ├── validado/
-│   └── estruturado_json/
-├── cache/
-├── logs/
-│   └── pipeline.log
-├── manifest.json
-└── .gitignore
-```
-
----
-
-### 🧠 Funcionalidades
-
-- ✅ Conversão `.odt` → `.md` com `pandoc`
-- ✅ Marcação semântica com LLM local (`ollama`)
-- ✅ Fallback automático para outro modelo ou chunking
-- ✅ Validação:
-  - Balanceamento de tags
-  - Fidelidade textual
-- ✅ Geração de JSON estruturado com `estilo_ref`
-- ✅ Suporte a páginas automáticas (capa, créditos, etc.)
-
----
-
-### ⚙️ Performance e Robustez
-
-- 🔄 **Chunking automático** quando o prompt ultrapassa o limite da LLM
-- 🧠 **Cache por hash** (MD5) para reuso de resultados anteriores
-- 🧵 **Execução paralela** com `ProcessPoolExecutor`
-- 📊 **Logs detalhados** com tempo de execução por etapa e por arquivo
-
----
-
-## 🎨 Etapa 2 — Formatação e Publicação
+## 🧩 Etapa 2 — Conversão `.md` → `.html`
 
 ### 🎯 Objetivo
 
-Renderizar os arquivos `.json` com `jinja2`, aplicar estilos definidos e gerar `.fodt`, `.html`, `.odt`, `.pdf` e `.epub`.
+Transformar cada capítulo `.md` em um arquivo `.html` isolado, mantendo estrutura mínima para EPUB (headings, parágrafos, listas).
+
+### 🛠️ Ferramentas
+
+- `Python-Markdown`  
+- ou `pandoc`
+
+### 📁 Estrutura
+
+gerado_automaticamente/pt_br/markdown/cap01.md  
+↓  
+gerado_automaticamente/pt_br/html/parte_01_capitulo_01.html
 
 ---
 
-### 📦 Estrutura
+## 🧩 Etapa 3 — Geração do EPUB
 
-```
-parte2_formatacao_publicacao/
-├── scripts/
-│   ├── renderizar_fodt.py
-│   ├── renderizar_html.py
-│   ├── gerar_css.py
-│   ├── build_pipeline.py
-│   └── logger.py
-│
-├── templates/
-│   ├── capitulo.fodt.j2
-│   ├── capitulo.html.j2
-│   ├── pagina_estatica.fodt.j2
-│   ├── pagina_estatica.html.j2
-│   └── style.css.j2
-│
-├── estilos/
-│   ├── estilos_definicoes.json
-│   ├── style.css
-│   └── fonts/
-│       ├── ArialBlack.ttf
-│       ├── LiberationSerif-Regular.ttf
-│       └── Georgia-Italic.ttf
-│
-├── saida/
-│   ├── renderizado_odt/
-│   ├── renderizado_html/
-│   ├── odt_final/
-│   ├── pdf_final/
-│   └── epub_final/
-└── manifest.json
-```
+### 🎯 Objetivo
 
----
+Montar um EPUB completo, estruturado por partes e capítulos, com elementos pré-textuais e pós-textuais, CSS, capa e sumário navegável.
 
-### 🖋️ Pasta `fonts/` (fontes tipográficas)
+### 🛠️ Ferramentas possíveis
 
-- Contém as fontes utilizadas nos estilos declarados
-- Usada por LibreOffice na exportação `.odt`/`.pdf` e pode ser incorporada no EPUB
-- As fontes podem ser referenciadas no CSS via `@font-face`:
+- `ebooklib` — controle programático completo (AGPL)  
+- `pypub` — API simples  
+- `pandoc` — para geração rápida (menos controle)
 
-```css
-@font-face {
-  font-family: "Liberation Serif";
-  src: url("../fonts/LiberationSerif-Regular.ttf");
-}
-```
+### 📁 Estrutura HTML esperada
+
+capa.html  
+falsa_capa.html  
+pagina_de_rosto.html  
+pagina_de_creditos.html  
+dedicatoria.html  
+agradecimentos.html  
+epigrafe.html  
+sumario.html  
+introducao_geral.html  
+parte_01_introducao.html  
+parte_01_capitulo_01.html  
+parte_01_capitulo_02.html  
+...  
+parte_05_capitulo_xx.html  
+conclusao_geral.html  
+apendices.html  
+anexos.html  
+glossario.html  
+referencias.html  
+sobre_o_autor.html
 
 ---
 
-## 📜 Exemplo de Manifesto
+## 📦 Organização do Projeto
 
-```json
+projetos/  
+└── liderando_transformacao/  
+  ├── input/  
+  │  └── pt_br/  
+  │   └── capitulos/  
+  ├── gerado_automaticamente/  
+  │  └── pt_br/  
+  │   ├── markdown/  
+  │   ├── html/  
+  │   └── epub/  
+  ├── output/  
+  │  └── livro.epub  
+  ├── estilos/  
+  ├── scripts/  
+  └── logs/
+
+---
+
+## 📜 Exemplo de Manifesto (futuro)
+
 {
-  "modelo_llm": "phi3:mini",
-  "ordem": [
-    "capa_falsa",
+  "idioma": "pt_br",
+  "titulo": "Liderando a Transformação Digital",
+  "autor": "Jaime Dias",
+  "capa": "input/pt_br/images/capa.jpg",
+  "estrutura": [
+    "falsa_capa",
+    "pagina_de_rosto",
     "epigrafe",
-    "capitulo1",
-    "capitulo2",
-    "colofao"
-  ],
-  "estilos": "estilos_definicoes.json",
-  "formato": "A5",
-  "tamanho_max_prompt": 12000,
-  "capa_epub": "assets/imagens/capa.jpg"
+    "parte_01_introducao",
+    "parte_01_capitulo_01",
+    "parte_01_capitulo_02",
+    "...",
+    "referencias",
+    "sobre_o_autor"
+  ]
 }
-```
 
 ---
 
-## 🎨 Exemplo de `estilos_definicoes.json`
+## ✅ Funcionalidades já disponíveis
 
-```json
-{
-  "TITULO1": {
-    "odt": {
-      "nome_estilo": "Título Principal",
-      "fonte": "Arial Black",
-      "tamanho": "18pt",
-      "cor": "#2C5282"
-    },
-    "css": {
-      "classe": "titulo-principal",
-      "propriedades": {
-        "font-family": "Arial Black, sans-serif",
-        "font-size": "1.8em",
-        "color": "#2C5282"
-      }
-    }
-  },
-  "CORPO_DO_TEXTO": {
-    "odt": {
-      "nome_estilo": "Texto Corpo",
-      "fonte": "Liberation Serif",
-      "tamanho": "12pt"
-    },
-    "css": {
-      "classe": "corpo-texto",
-      "propriedades": {
-        "font-family": "Georgia, serif",
-        "font-size": "1em",
-        "text-indent": "2em",
-        "line-height": "1.6"
-      }
-    }
-  }
-}
-```
+- ✅ Conversão `.odt` → `.md` com Pandoc  
+- ✅ Conversão `.md` → `.html` com `markdown` ou `pandoc`  
+- ✅ Separação por partes e capítulos  
+- ✅ Suporte a elementos estruturais pré/pós-textuais  
+- ✅ Geração de EPUB com múltiplos HTMLs
 
 ---
 
-## 🧪 Execução
+## 🔄 Futuro: Etapas complementares
 
-### Modo local
-```bash
-python scripts/converter_odt_para_md.py
-python scripts/marcar_com_llm.py
-python scripts/validar_marcacao.py
-python scripts/parse_para_json.py
-python scripts/build_pipeline.py --modo completo
-```
-
-### Modo Docker
-```bash
-docker build -t pipeline-editorial .
-docker run --rm -v $(pwd):/app pipeline-editorial python scripts/build_pipeline.py
-```
+- 📘 Geração de `.pdf` com controle de estilo (`wkhtmltopdf`, `WeasyPrint`, ou `LibreOffice`)  
+- 🎨 Geração automática de sumário (`toc.xhtml`)  
+- 🔍 Validação EPUB com `epubcheck`  
+- 📊 Contador de palavras por capítulo  
+- 🌐 Publicação multilíngue e controle por `config.json`
 
 ---
 
-## 🧰 Bibliotecas Utilizadas
-
-| Biblioteca           | Função Principal                                 |
-|----------------------|--------------------------------------------------|
-| `pypandoc`           | Conversão `.odt` → `.md`                         |
-| `jinja2`             | Templates `.html` e `.fodt`                      |
-| `ollama`             | LLM local para marcação semântica                |
-| `qrcode`             | Inserção de QR codes                             |
-| `hashlib`            | Cache baseado em fingerprint de entrada          |
-| `logging`            | Logs por etapa, com falhas e tempos              |
-| `concurrent.futures` | Execução paralela                                |
-| `ebook-convert`      | Geração `.epub` com TOC                          |
-| `LibreOffice`        | Geração `.odt` e `.pdf` com estilo aplicado      |
-
----
-
-## 💡 Futuras Extensões (opcionais)
-
-- Contador de palavras por capítulo para validar integridade
-- Validador visual de marcações
-- Exportação multilíngue com estilos compartilhados
-- Interface web para revisão e diff visual
-- Publicação por organização biônica ou editora digital
-
----
-
-> Esta pipeline fornece uma base robusta e extensível para produção editorial profissional com IA, automação semântica e controle fino de estilo e conteúdo.
-
+> Esta pipeline é pensada para garantir **controle total**, **simplicidade na manutenção** e **alta qualidade técnica** para publicação editorial multiplataforma, começando por EPUB e evoluindo para PDF.

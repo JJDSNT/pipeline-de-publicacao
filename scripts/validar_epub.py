@@ -4,6 +4,7 @@ import subprocess
 from pathlib import Path
 import os # Import the os module
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--projeto", required=True)
@@ -18,9 +19,9 @@ def main():
 
     # --- Start of modifications ---
     # Get the absolute path to the pipeline's root directory
-    # This assumes 'validar_epub.py' is in 'scripts/' and 'epubcheck-5.2.1/' is at the root
+    # This assumes 'validar_epub.py' is in 'scripts/' and 'bin/epubcheck-5.2.1/' is at the root
     pipeline_root = Path(__file__).resolve().parent.parent
-    epubcheck_jar_path = pipeline_root / "epubcheck-5.2.1" / "epubcheck.jar"
+    epubcheck_jar_path = pipeline_root / "bin" / "epubcheck-5.2.1" / "epubcheck.jar"
 
     if not epubcheck_jar_path.exists():
         print(f"❌ Arquivo epubcheck.jar não encontrado: {epubcheck_jar_path}")
@@ -40,6 +41,7 @@ def main():
         print(result.stdout)
         print(result.stderr)
         exit(1)
+
 
 if __name__ == "__main__":
     main()
