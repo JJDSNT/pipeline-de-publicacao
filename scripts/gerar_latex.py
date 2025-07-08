@@ -5,16 +5,17 @@ from pathlib import Path
 import sys
 import re
 import subprocess
-import time # Adicionado para logs de tempo
+import time
 
 from jinja2 import Environment, FileSystemLoader
 
 # Adiciona o diretório raiz do projeto ao sys.path para importações
 script_dir = Path(__file__).resolve().parent
-project_root = script_dir.parent
+project_root = script_dir.parent 
 sys.path.insert(0, str(project_root))
 
 from utils.cleaner import clean_title_for_output
+from utils.filters import setup_jinja_env_with_filters # Importa a função de setup de filtros
 
 def parse_dimension(value: str, default: float) -> float:
     """Extrai o valor numérico de uma string de dimensão (ex: '2.5cm' -> 2.5)."""
@@ -39,6 +40,9 @@ def convert_markdown_to_latex(markdown_text: str) -> str:
         )
         latex_output = result.stdout.decode('utf-8').strip()
         latex_output = latex_output.replace('\\tightlist\n', '')
+        # A remoção do emoji será feita pelo filtro escape_latex no Jinja2 agora,
+        # mas mantemos aqui por segurança se esta função for usada isoladamente.
+        latex_output = latex_output.replace('📌', '') 
         return latex_output
     except FileNotFoundError:
         print("❌ Erro: Pandoc não encontrado. Certifique-se de que está instalado e no PATH.")
@@ -103,6 +107,7 @@ def gerar_latex(projeto: str, idioma_arg: str):
         return
     
     env = Environment(loader=FileSystemLoader(templates_dir), autoescape=False)
+    env = setup_jinja_env_with_filters(env)
 
     config_data = json.loads(config_path.read_text(encoding="utf-8"))
     titulo_livro = config_data.get("titulo", "Livro Digital")
@@ -151,6 +156,13 @@ def gerar_latex(projeto: str, idioma_arg: str):
             processed_colors[name] = hex_val
     processed_styles["colors"] = {**default_colors, **processed_colors}
 
+    # --- NOVO: Gerar definições de cores LaTeX ---
+    custom_color_definitions = []
+    for color_name, hex_value in processed_styles["colors"].items():
+        custom_color_definitions.append(f"\\definecolor{{{color_name}}}{{HTML}}{{{hex_value}}}")
+    # Juntar todas as definições de cor em uma única string para injetar no template
+    processed_styles["custom_color_definitions"] = "\n".join(custom_color_definitions)
+
 
     livro_path = base_dir / "gerado_automaticamente" / idioma_normalizado_para_path / "livro_estruturado.json"
     if not livro_path.exists():
@@ -191,7 +203,9 @@ def gerar_latex(projeto: str, idioma_arg: str):
     latex_content = base_latex_tpl.render(
         styles=processed_styles,
         content=processed_content,
-        lang=idioma_para_latex
+        lang=idioma_para_latex,
+        # Passar as definições de cor para o template
+        custom_color_definitions=processed_styles["custom_color_definitions"] 
     )
 
     with open(output_tex_path, "w", encoding="utf-8") as f:
@@ -200,7 +214,6 @@ def gerar_latex(projeto: str, idioma_arg: str):
     end_time = time.time()
     print(f"✅ Arquivo LaTeX gerado com sucesso em: {output_tex_path.resolve()}")
     print(f"[{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(end_time))}] ✅ Etapa 'Gerar LaTeX' concluída em {end_time - start_time:.2f} segundos.")
-    # REMOVIDA: print(f"Para gerar o PDF, execute 'latex_para_pdf.py' apontando para este arquivo.")
 
 
 def main():

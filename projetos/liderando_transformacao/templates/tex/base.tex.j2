@@ -1,71 +1,123 @@
-% projetos/lideracao_transformacao/templates/tex/base.tex.j2
+% projetos/liderando_transformacao/templates/tex/base.tex.j2
+\documentclass[10pt]{article}
 
-\documentclass[
-  {{ styles.paragraph_default_font_size_pt }}pt
-]{article}
+% --- Configurações de Idioma e Codificação ---
+% inputenx e fontenc são automaticamente tratados por XeLaTeX com utf8 e fontes OpenType,
+% mas mantê-los para compatibilidade ou clareza é ok.
+\usepackage[utf8]{inputenx}
+\usepackage[T1]{fontenc}
+\usepackage[main={{ lang }}]{babel} % Idioma principal. ex: brazil, english
 
-\usepackage[
-  margin={{ styles.document_margins_cm }}cm
-]{geometry}
-\usepackage{fontspec} % Para controle de fontes modernas (XeLaTeX/LuaLaTeX)
+% --- *** IMPORTANTE: AJUSTE DO XCOLOR AQUI *** ---
+% Passa opções para o xcolor ANTES que ele seja carregado por outros pacotes (como hyperref).
+\PassOptionsToPackage{xetex,table,dvipsnames,svgnames,x11names}{xcolor}
 \usepackage{xcolor}
-\usepackage{titlesec}
+% Definir cores personalizadas (INJETADO AQUI PELO PYTHON)
+{{ custom_color_definitions }}
+% --- FIM DO AJUSTE DO XCOLOR ---
+
+% --- Configurações de Fonte com Fontspec para XeLaTeX ---
+% NOTA: A linha 'Path=./fonts/,' FOI COMENTADA.
+% Isso fará com que o XeLaTeX procure as fontes instaladas globalmente no sistema.
+\usepackage{fontspec}
+\setmainfont[
+  % Path=./fonts/, % <-- ESTA LINHA FOI COMENTADA
+  Extension=.otf,
+  UprightFont=*-Regular,
+  ItalicFont=*-Italic,
+  BoldFont=*-Bold,
+  BoldItalicFont=*-BoldItalic
+]{LatinModernRoman} % Nome base da família de fontes Latin Modern Roman
+
+\setsansfont[
+  % Path=./fonts/, % <-- ESTA LINHA FOI COMENTADA
+  Extension=.otf,
+  UprightFont=*-Regular,
+  ItalicFont=*-Italic,
+  BoldFont=*-Bold,
+  BoldItalicFont=*-BoldItalic
+]{LatinModernSans} % Nome base da família de fontes Latin Modern Sans
+
+% --- Configuração de Layout e Margens ---
+\usepackage[a4paper,
+  left={{ styles.document_margins_cm }}cm,
+  right={{ styles.document_margins_cm }}cm,
+  top={{ styles.document_margins_cm }}cm,
+  bottom={{ styles.document_margins_cm }}cm
+]{geometry}
+
+% --- Espaçamento de Linha ---
 \usepackage{setspace}
-\usepackage{enumitem} % Para listas
-\usepackage{ragged2e} % Para \justifying (se precisar de justificação completa)
-\usepackage[{{ lang }}]{babel} % Suporte a idiomas (brazil, english)
-\usepackage{hyperref} % Para links gerados pelo Pandoc
-% Você pode precisar de outros pacotes se o Pandoc gerar LaTeX para imagens, tabelas, etc.
-% Ex: \usepackage{graphicx} para imagens
+\setstretch{ {{ styles.paragraph_default_line_height }} }
 
-% Mapeamento de Cores
-{% for name, hex in styles.colors.items() %}
-\definecolor{ {{- name -}} }{HTML}{ {{- hex -}} }
-{% endfor %}
+% --- Títulos (titlesec) ---
+\usepackage{titlesec}
 
-% Configurações de Fontes
-\setmainfont{ {{- styles.paragraph_default_font_family -}} }
-\setsansfont{ {{- styles.heading_1_font_family -}} }
-
-% Estilo de Parágrafo Padrão
-\setlength{\parindent}{ {{- styles.paragraph_default_text_indent_cm -}} cm}
-\linespread{ {{- styles.paragraph_default_line_height -}} }
-\parskip={{ styles.paragraph_default_margin_bottom_cm }}cm plus 1pt % Adicionado "plus 1pt" para evitar badbox
-\color{ {{- styles.paragraph_default_color_name -}} }
-
-% Estilo de Título Nível 1 (Section)
-\titleformat{\section}
-  {\fontsize{ {{- styles.heading_1_font_size_pt -}} pt}{ {{- styles.heading_1_line_spacing_pt -}} pt}\selectfont}
-  {\textbf{\color{ {{- styles.heading_1_color_name -}} }}}
+% Título do Documento/Livro
+\titleformat{\section}[display]
+  {\bfseries\centering\Huge\color{DarkBlueHeading}}
   {}
-  {0pt}{}
-[\vspace{ {{- styles.heading_1_margin_top_cm -}} cm}] % Espaço antes
-\titlespacing*{\section}{0pt}{0pt}{ {{- styles.heading_1_margin_bottom_cm -}} cm} % Espaço depois
+  {0pt}
+  {\normalfont}
 
+% --- Customizações para capítulos e partes (se necessário) ---
+% Exemplo para Capítulos (usando \chapter em book/report, ou \section em article)
+% Aqui, como estamos usando article, \section é o maior título.
+\titleformat{\section}[hang] % [hang] para título pendurado (indentado)
+  {\sffamily\bfseries\color{DarkBlueHeading}\fontsize{ {{ styles.heading_1_font_size_pt }}pt}{ {{ styles.heading_1_line_spacing_pt }}pt}\selectfont}
+  {}
+  {0pt} % Sem separação horizontal entre número/título
+  {\raggedright} % Alinhamento do título
+\titlespacing*{\section}
+  {0pt}{ {{ styles.heading_1_margin_top_cm }}cm}{ {{ styles.heading_1_margin_bottom_cm }}cm}
+
+% --- Ajustes de Parágrafo ---
+\usepackage{indentfirst} % Indenta o primeiro parágrafo de cada seção
+\setlength{\parindent}{ {{ styles.paragraph_default_text_indent_cm }}cm }
+\setlength{\parskip}{0pt} % Remove espaço extra entre parágrafos, controla com margin-bottom
+\DeclareRobustCommand{\paragraphbreak}{\vspace{ {{ styles.paragraph_default_margin_bottom_cm }}cm }\noindent} % Adiciona espaço entre parágrafos
+
+% --- Outros Pacotes úteis ---
+\usepackage{hyperref} % Para links internos e índice clicável
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={{ content.title | escape_latex }},
+    pdfauthor={{ content.author | escape_latex }},
+    linktocpage=true % Makes the page number in the toc clickable
+}
+
+\usepackage{enumitem} % Para listas personalizadas
+\usepackage{ragged2e} % Para justificação de texto
+\usepackage{graphicx} % Para inclusão de imagens
+
+% --- REMOVIDAS AS LINHAS PROBLEMATICAS DE DeclareUnicodeCharacter ---
+% O filtro escape_latex e Pandoc já cuidam disso.
+
+{% raw %}\title{{\fontsize{36pt}{40pt}\selectfont\bfseries\color{DarkBlueHeading} {% endraw %}{{ content.title | escape_latex }}{% raw %} \\}} % Título com cor e negrito{% endraw %}
+{% raw %}\author{{\fontsize{24pt}{28pt}\selectfont\color{text_gray} {% endraw %}{{ content.author | escape_latex }}{% raw %} \\}} % Autor com cor{% endraw %}
 
 \begin{document}
 
-\title{ {{- content.title -}} }
-\author{ {{- content.author -}} }
-\maketitle
+\maketitle % Gera a página de título
 
-% Exemplo de Sumário e Conteúdo:
-\tableofcontents
+\clearpage
+\tableofcontents % Gera o índice
+\clearpage
 
 {% for section in content.sections %}
-  {% if section.type == "heading_part" %}
-\part{ {{- section.text -}} } % Comando para "partes" em LaTeX
-  {% elif section.type == "heading_1" %}
-\section{ {{- section.text -}} } % Títulos de capítulo/seção
-  {% endif %}
-  
-  {# Itera sobre o conteúdo da seção (agora é provável que haja apenas um item 'raw_latex') #}
-  {% for item in section.content %}
-    {% if item.type == "raw_latex" %}
-      {{ item.text }} {# Imprime o LaTeX gerado pelo Pandoc diretamente #}
+    {% if section.type == "heading_part" %}
+        \part*{ {{ section.text | escape_latex }} }
+    {% elif section.type == "heading_1" %}
+        \section*{ {{ section.text | escape_latex }} }
     {% endif %}
-  {% endfor %}
-  
+    {% for block in section.content %}
+        {% if block.type == "raw_latex" %}
+            {{ block.text }} 
+        {% endif %}
+    {% endfor %}
 {% endfor %}
 
 \end{document}

@@ -93,7 +93,8 @@ def main():
     cache_dir.mkdir(parents=True, exist_ok=True)
     log_dir.mkdir(parents=True, exist_ok=True)
 
-    log_path = log_dir / f"pipeline_{args.idioma.replace('-', '_').lower()}.log"
+    # MODIFICAÇÃO AQUI: Nome do arquivo de log simplificado para pipeline.log
+    log_path = log_dir / "pipeline.log" 
     
     # Limpa o log anterior no início de cada execução
     if log_path.exists():
