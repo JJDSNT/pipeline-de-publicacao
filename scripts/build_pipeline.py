@@ -7,97 +7,100 @@ import hashlib
 from datetime import datetime
 import shutil
 
-
 def hash_do_arquivo(path: Path) -> str:
     return hashlib.md5(path.read_bytes()).hexdigest()
-
 
 def carregar_cache(path: Path) -> dict:
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return {}
 
-
 def salvar_cache(path: Path, dados: dict):
     path.write_text(json.dumps(dados, indent=2), encoding="utf-8")
 
-
-def log(msg: str, arquivo_log: Path):
+def log(msg: str, arquivo_log: Path, is_subprocess_output=False):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    linha = f"[{timestamp}] {msg}"
-    print(linha)
+    prefix = "[SUBPROCESS]" if is_subprocess_output else ""
+    linha = f"[{timestamp}] {prefix} {msg}"
+    print(msg) # Imprime a mensagem original sem o timestamp para o console, para clareza visual
     with arquivo_log.open("a", encoding="utf-8") as f:
         f.write(linha + "\n")
 
-
 def executar_etapa(nome: str, script: str, args: list[str], log_path: Path) -> bool:
-    try:
-        log(f"▶️ Iniciando etapa: {nome}", log_path)
-        resultado = subprocess.run(["python", script] + args, capture_output=True, text=True)
+    full_command = ["python", script] + args
+    
+    # Imprime a mensagem de início da etapa diretamente para o console e loga
+    log(f"▶️ Iniciando etapa: {nome}", log_path)
 
-        if resultado.returncode == 0:
-            log(resultado.stdout.strip(), log_path)
+    try:
+        process = subprocess.Popen(
+            full_command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding='utf-8',
+            errors='replace'
+        )
+
+        # Imprime a saída do subprocesso em tempo real e loga
+        # Usamos `io.TextIOWrapper` para lidar com a saída do pipe como texto
+        with process.stdout as stdout_pipe, process.stderr as stderr_pipe:
+            # Loop para ler stdout e stderr de forma semi-síncrona (intercalada)
+            # Isso melhora a ordem visual no console
+            while True:
+                stdout_line = stdout_pipe.readline()
+                stderr_line = stderr_pipe.readline()
+
+                if stdout_line:
+                    log(stdout_line.strip(), log_path, is_subprocess_output=True)
+                if stderr_line:
+                    log(stderr_line.strip(), log_path, is_subprocess_output=True)
+                
+                # Se não houver mais saída de ambos e o processo terminou, saia
+                if not stdout_line and not stderr_line and process.poll() is not None:
+                    break
+
+        # Espera o processo terminar completamente se ainda não o fez
+        process.wait()
+
+        if process.returncode == 0:
             log(f"✅ Etapa concluída: {nome}\n", log_path)
             return True
         else:
-            log(resultado.stdout.strip(), log_path)
-            log(resultado.stderr.strip(), log_path)
-            log(f"❌ Falha na etapa: {nome} — código {resultado.returncode}\n", log_path)
+            log(f"❌ Falha na etapa: {nome} — código {process.returncode}\n", log_path)
             return False
 
+    except FileNotFoundError:
+        log(f"❌ Erro: Comando 'python' ou script '{script}' não encontrado para a etapa {nome}.", log_path)
+        log(f"Certifique-se de que Python está no PATH e o script '{script}' existe.", log_path)
+        return False
     except Exception as e:
         log(f"❌ Erro inesperado na etapa {nome}: {e}\n", log_path)
         return False
 
-
-def limpar_output(raiz: Path, idioma: str, log_path: Path):
-    """Remove arquivos desnecessários do output, mantendo apenas os finais"""
-    output_dir = raiz / "output"
-    output_idioma = output_dir / idioma
-
-    # Arquivos que devem ser mantidos
-    arquivos_finais = [
-        "livro_completo.fodt",
-        "livro_completo.odt",
-        "livro_completo.pdf"
-    ]
-
-    try:
-        # Mover arquivos finais da raiz para o diretório do idioma
-        for arquivo in arquivos_finais:
-            origem = output_dir / arquivo
-            destino = output_idioma / arquivo
-            if origem.exists():
-                output_idioma.mkdir(parents=True, exist_ok=True)
-                shutil.move(str(origem), str(destino))
-                log(f"📦 Movido: {arquivo} → {idioma}/", log_path)
-
-        # Remover arquivos individuais desnecessários
-        fodt_individuais = output_idioma / "fodt"
-        if fodt_individuais.exists():
-            shutil.rmtree(fodt_individuais)
-            log(f"🗑️ Removido: {idioma}/fodt/ (arquivos individuais)", log_path)
-
-        log("✅ Limpeza do output concluída", log_path)
-
-    except Exception as e:
-        log(f"⚠️ Erro na limpeza: {e}", log_path)
-
+# A função 'limpar_output' foi removida, pois não é responsabilidade do build_pipeline.py
 
 def main():
     parser = argparse.ArgumentParser(description="Executar pipeline completa de publicação")
     parser.add_argument("--projeto", default="liderando_transformacao", help="Nome do projeto")
-    parser.add_argument("--idioma", default="pt_br", help="Idioma do conteúdo")
+    parser.add_argument("--idioma", default="pt-BR", help="Idioma do conteúdo")
     args = parser.parse_args()
 
     raiz = Path(__file__).resolve().parents[1] / "projetos" / args.projeto
-    cache_path = raiz / "cache" / f"pipeline_cache_{args.idioma}.json"
-    log_path = raiz / "logs" / f"pipeline_{args.idioma}.log"
-    cache_path.parent.mkdir(parents=True, exist_ok=True)
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    log_path.write_text("")  # Limpa log anterior
+    cache_dir = raiz / "cache"
+    log_dir = raiz / "logs"
+    
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    log_path = log_dir / f"pipeline_{args.idioma.replace('-', '_').lower()}.log"
+    
+    # Limpa o log anterior no início de cada execução
+    if log_path.exists():
+        log_path.write_text("") 
 
     print(f"\n🚀 Iniciando pipeline para o projeto '{args.projeto}' ({args.idioma})\n")
+    log(f"Log da Pipeline para o projeto '{args.projeto}' ({args.idioma})", log_path)
 
     etapas = [
         ("Gerar Manifesto", "scripts/gerar_manifesto.py"),
@@ -107,11 +110,11 @@ def main():
         ("Validar Estilos", "scripts/validar_estilos.py"),
         ("Converter MD → HTML", "scripts/md_para_html.py"),
         ("Gerar ePub", "scripts/gerar_epub.py"),
-        ("Validar ePub", "scripts/validar_epub.py"),
         ("Gerar LaTex", "scripts/gerar_latex.py"),
         ("Gerar PDF", "scripts/latex_para_pdf.py"),
         ("Renderizar JSON → FODT", "scripts/renderizar_json_para_fodt.py"),
         ("Exportar FODT → ODT/PDF", "scripts/consolidar_e_exportar_odt_pdf.py"),
+        ("Validar ePub", "scripts/validar_epub.py")
     ]
 
     args_comuns = ["--projeto", args.projeto, "--idioma", args.idioma]
@@ -124,10 +127,10 @@ def main():
             break
 
     if sucesso:
-        # Limpar e organizar output
-        limpar_output(raiz, args.idioma, log_path)
+        log("\n🏁 Pipeline finalizada com sucesso.", log_path)
         print("\n🏁 Pipeline finalizada com sucesso.")
     else:
+        log("\n⚠️ Pipeline interrompida por erro. Veja os logs para detalhes.", log_path)
         print("\n⚠️ Pipeline interrompida por erro. Veja os logs para detalhes.")
 
 

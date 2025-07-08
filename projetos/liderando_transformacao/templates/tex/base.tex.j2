@@ -1,3 +1,5 @@
+% projetos/lideracao_transformacao/templates/tex/base.tex.j2
+
 \documentclass[
   {{ styles.paragraph_default_font_size_pt }}pt
 ]{article}
@@ -12,6 +14,9 @@
 \usepackage{enumitem} % Para listas
 \usepackage{ragged2e} % Para \justifying (se precisar de justificação completa)
 \usepackage[{{ lang }}]{babel} % Suporte a idiomas (brazil, english)
+\usepackage{hyperref} % Para links gerados pelo Pandoc
+% Você pode precisar de outros pacotes se o Pandoc gerar LaTeX para imagens, tabelas, etc.
+% Ex: \usepackage{graphicx} para imagens
 
 % Mapeamento de Cores
 {% for name, hex in styles.colors.items() %}
@@ -37,6 +42,7 @@
 [\vspace{ {{- styles.heading_1_margin_top_cm -}} cm}] % Espaço antes
 \titlespacing*{\section}{0pt}{0pt}{ {{- styles.heading_1_margin_bottom_cm -}} cm} % Espaço depois
 
+
 \begin{document}
 
 \title{ {{- content.title -}} }
@@ -53,39 +59,13 @@
 \section{ {{- section.text -}} } % Títulos de capítulo/seção
   {% endif %}
   
-  {% set current_list_type = none %}
+  {# Itera sobre o conteúdo da seção (agora é provável que haja apenas um item 'raw_latex') #}
   {% for item in section.content %}
-    {% if item.type == "paragraph_default" %}
-      {% if current_list_type %}
-\end{ {{- current_list_type -}} }
-        {% set current_list_type = none %}
-      {% endif %}
-{{ item.text | trim }}
-\par % Garante nova linha para cada parágrafo
-    {% elif item.type == "list_item_bullet" %}
-      {% if current_list_type != "itemize" %}
-        {% if current_list_type %}
-\end{ {{- current_list_type -}} }
-        {% endif %}
-\begin{itemize}
-        {% set current_list_type = "itemize" %}
-      {% endif %}
-\item {{ item.text | trim }}
-    {% elif item.type == "list_item_numbered" %}
-      {% if current_list_type != "enumerate" %}
-        {% if current_list_type %}
-\end{ {{- current_list_type -}} }
-        {% endif %}
-\begin{enumerate}
-        {% set current_list_type = "enumerate" %}
-      {% endif %}
-\item {{ item.text | trim }}
+    {% if item.type == "raw_latex" %}
+      {{ item.text }} {# Imprime o LaTeX gerado pelo Pandoc diretamente #}
     {% endif %}
   {% endfor %}
   
-  {% if current_list_type %}
-\end{ {{- current_list_type -}} }
-  {% endif %}
 {% endfor %}
 
 \end{document}
