@@ -7,14 +7,23 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <p style="display:none;"><a href="nav.xhtml">Sumário Técnico</a></p>
     <nav epub:type="toc" id="toc-visual">
-      <h1>Sumário</h1>
+      {# Título principal do Sumário #}
+      <h1 class="toc-title">Sumário</h1>
       <ol>
-        {% for cap in capitulos_para_indice %}
-        <li><a href="{{ cap.href }}">{{ cap.titulo }}</a></li>
+        {% for parte in partes %}
+        <li>
+          <a href="{{ parte.arquivo }}" class="toc-part">{{ parte.titulo }}</a>
+          <ol>
+            {% for cap in parte.capitulos %}
+              {# Título do Capítulo #}
+              <li><a href="{{ cap.arquivo }}" class="toc-chapter">{{ cap.titulo }}</a></li>
+            {% endfor %}
+          </ol>
+        </li>
         {% endfor %}
       </ol>
     </nav>
-    <p style="display:none;"><a href="nav.xhtml">Sumário Técnico</a></p>
   </body>
 </html>

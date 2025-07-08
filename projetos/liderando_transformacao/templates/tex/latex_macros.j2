@@ -1,0 +1,22 @@
+{# latex_macros.j2 #}
+
+{# Define as chaves para comandos LaTeX #}
+{% set LB = '{' %}
+{% set RB = '}' %}
+
+{# Macro para negrito #}
+{% macro bold(text) %}
+    \textbf{{ LB }}{{ text }}{{ RB }}
+{% endmacro %}
+
+{# Macro para itálico #}
+{% macro italic(text) %}
+    \textit{{ LB }}{{ text }}{{ RB }}
+{% endmacro %}
+
+{# Macro para incluir um link #}
+{% macro url(link, text) %}
+    \href{{ LB }}{{ link }}{{ RB }}{{ LB }}{{ text }}{{ RB }}
+{% endmacro %}
+
+{# Pode ter também blocos de código para configurações globais #}

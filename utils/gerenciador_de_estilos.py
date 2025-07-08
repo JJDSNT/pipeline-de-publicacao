@@ -1,3 +1,4 @@
+#  utils/gerenciador_de_estilos.py
 import json
 from pathlib import Path
 from typing import Dict, Any

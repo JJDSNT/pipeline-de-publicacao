@@ -3,8 +3,6 @@
     "versao": "1.0",
     "descricao": "Configuração unificada de estilos para ODT e EPUB, baseada em CSS e definições de PyODConverter",
     "projeto": "liderando_transformacao",
-    "viewport": "width=device-width, initial-scale=1.0",
-    "charset": "UTF-8",
     "fontes_principais_serif": ["Crimson Text", "serif"],
     "fontes_principais_sans_serif": ["Fira Sans", "sans-serif"],
     "fontes_principais_mono": ["Liberation Mono", "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Courier New", "monospace"],
@@ -34,6 +32,7 @@
       "vermelho": "#e53e3e"
     }
   },
+
   "estilos": {
     "BODY_TEXT": {
       "semantica": {
@@ -1244,107 +1243,6 @@
           "letter-spacing": "0.5em"
         }
       }
-    }
-  },
-  "configuracoes_globais": {
-    "odt": {
-      "margens": {
-        "superior": "2.5cm",
-        "inferior": "2.5cm",
-        "esquerda": "3cm",
-        "direita": "2cm"
-      },
-      "cabecalho": {
-        "ativo": true,
-        "fonte": "Fira Sans",
-        "tamanho": "10pt"
-      },
-      "rodape": {
-        "ativo": true,
-        "numeracao": true,
-        "fonte": "Fira Sans",
-        "tamanho": "9pt"
-      }
-    },
-    "epub": {
-      "css_global": {
-        "body": {
-          "font-family": "Crimson Text, serif",
-          "font-size": "100%",
-          "line-height": "1.6",
-          "color": "#1a202c",
-          "margin": "0",
-          "padding": "1em"
-        },
-        "h1, h2, h3, h4, h5, h6": {
-          "font-family": "Fira Sans, sans-serif",
-          "margin-top": "1.5em",
-          "margin-bottom": "0.8em"
-        },
-        "p": {
-          "margin-bottom": "1.2em"
-        }
-      },
-      "metadados": {
-        "viewport": "width=device-width, initial-scale=1.0",
-        "charset": "UTF-8"
-      }
-    }
-  },
-  "mapeamento_semantico": {
-    "titulos": [
-      "MAIN_TITLE",
-      "BOOK_SUBTITLE",
-      "PART_PAGE_TITLE",
-      "CHAPTER_TITLE",
-      "HEADING_2",
-      "HEADING_3",
-      "HEADING_4",
-      "TOC_PART",
-      "TOC_CHAPTER",
-      "TOC_SECTION",
-      "TOC_SUBSECTION",
-      "TOC_TITLE"
-    ],
-    "conteudo": [
-      "BODY_TEXT",
-      "FIRST_PARAGRAPH",
-      "DROP_CAP_PARAGRAPH",
-      "CONCEPT_BOX",
-      "ALERT_BOX",
-      "EXAMPLE_BOX",
-      "TIP_BOX",
-      "WARNING_BOX",
-      "INFO_BOX",
-      "CODE_BLOCK",
-      "LIST_ITEM",
-      "BULLET_LIST",
-      "NUMBERED_LIST",
-      "CHECK_LIST",
-      "QUOTE_BLOCK",
-      "CAPTION"
-    ],
-    "especiais": [
-      "CONCEPT_TERM",
-      "FOREIGN_TERM",
-      "CODE_INLINE",
-      "URL_TEXT",
-      "EMPHASIS",
-      "STRONG",
-      "HIGHLIGHT",
-      "SUBSCRIPT",
-      "SUPERSCRIPT",
-      "PAGE_BREAK_STYLE",
-      "NO_BREAK",
-      "NARRATIVE_MARKER",
-      "PART_PAGE_NUMBER",
-      "PART_PAGE_SUBTITLE",
-      "CHAPTER_SUBTITLE",
-      "FOOTER"
-    ],
-    "hierarquia_navegacao": {
-      "nivel_1": "MAIN_TITLE",
-      "nivel_2": "CHAPTER_TITLE"
     }
   }
 }

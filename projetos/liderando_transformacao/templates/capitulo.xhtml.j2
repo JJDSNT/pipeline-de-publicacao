@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="{{ lang }}" lang="{{ lang }}">
+  <head>
+    <title>{{ titulo1 }}</title>
+    <link rel="stylesheet" href="{{ caminho_css }}" type="text/css"/>
+  </head>
+  <body>
+    <section epub:type="chapter">
+      <h1 class="chapter-title">{{ titulo1 }}</h1>
+      {% if titulo2 %}
+      <h2 class="chapter-subtitle">{{ titulo2 }}</h2>
+      {% endif %}
+      {% for linha in corpo_do_texto %}
+      <p>{{ linha }}</p>
+      {% endfor %}
+    </section>
+  </body>
+</html>
+<section epub:type="chapter" id="chapter-{{ chapter.id }}">
+  <h{{ chapter.level }}>{{ chapter.title }}</h{{ chapter.level }}>
+  {% for paragraph in chapter.content %}
+    <p>{{ paragraph.text }}</p>
+  {% endfor %}
+</section>
