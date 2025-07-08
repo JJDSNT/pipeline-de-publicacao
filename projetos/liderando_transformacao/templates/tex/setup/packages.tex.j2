@@ -1,0 +1,23 @@
+% projetos/liderando_transformacao/templates/tex/setup/packages.tex.j2
+
+\usepackage[T1]{fontenc}
+\usepackage[main={{ lang }}]{babel} % Idioma principal. ex: brazil, english
+
+% --- *** IMPORTANTE: AJUSTE DO XCOLOR AQUI *** ---
+% Passa opções para o xcolor ANTES que ele seja carregado por outros pacotes (como hyperref).
+\PassOptionsToPackage{xetex,table,dvipsnames,svgnames,x11names}{xcolor}
+\usepackage{xcolor}
+% --- FIM DO AJUSTE DO XCOLOR ---
+
+\usepackage{fontspec}      % Para configurações de fonte com XeLaTeX
+\usepackage{geometry}      % Para layout e margens
+\usepackage{setspace}      % Para espaçamento de linha
+\usepackage{titlesec}      % Para formatação de títulos
+\usepackage{indentfirst}   % Para indentar o primeiro parágrafo de cada seção
+\usepackage{hyperref}      % Para links internos e índice clicável
+\usepackage{enumitem}      % Para listas personalizadas
+\usepackage{ragged2e}      % Para justificação de texto
+\usepackage{graphicx}      % Para inclusão de imagens
+\usepackage{tocloft}       % Para configurações de sumário
+\usepackage{amsmath}       % Adicionado: Para equações matemáticas
+\usepackage[utf8]{inputenc} % Adicionado: Para codificação de entrada, embora menos crítico com XeLaTeX

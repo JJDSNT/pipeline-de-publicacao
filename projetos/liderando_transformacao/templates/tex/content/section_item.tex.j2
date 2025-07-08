@@ -1,0 +1,12 @@
+% projetos/liderando_transformacao/templates/tex/content/section_item.tex.j2
+
+{% if section.type == "heading_part" %}
+    \part{ {{ section.text | escape_latex }} }
+{% elif section.type == "heading_1" %}
+    \section{ {{ section.text | escape_latex }} }
+{% endif %}
+{% for block in section.content %}
+    {% if block.type == "raw_latex" %}
+        {{ block.text }} 
+    {% endif %}
+{% endfor %}

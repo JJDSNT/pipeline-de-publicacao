@@ -1,0 +1,42 @@
+% projetos/liderando_transformacao/templates/tex/main.tex.j2
+
+\documentclass[10pt]{article}
+
+% --- Configurações de Idioma e Codificação ---
+% inputenx e fontenc são automaticamente tratados por XeLaTeX com utf8 e fontes OpenType,
+% mas mantê-los para compatibilidade ou clareza é ok.
+% REMOVIDO DAQUI E MOVIDO PARA packages.tex: \usepackage[utf8]{inputenx}
+% REMOVIDO DAQUI E MOVIDO PARA packages.tex: \usepackage[T1]{fontenc}
+% REMOVIDO DAQUI E MOVIDO PARA packages.tex: \usepackage[main={{ lang }}]{babel}
+
+% Inclui os arquivos de configuração gerados
+\input{setup/packages.tex}
+\input{setup/configurations.tex}
+\input{setup/styles.tex}
+
+% --- Metadados do Documento (Essencial para \maketitle) ---
+% Estes valores virão do seu metadados.json e da data atual
+% CORREÇÃO AQUI: REMOVIDO O COLCHETE EXTRA '{' APÓS O '{{'
+\title{{ metadados.titulo_livro | replace("\n", " ") }}
+\author{{ metadados.autor | replace("\n", " ") }}
+\date{{ hoje }} % Variável 'hoje' é populada pelo script Python
+
+
+% Conteúdo principal
+\begin{document}
+
+\pagenumbering{gobble} % Remove números de página para a página de título/capa
+\maketitle % Gera a página de título usando \title, \author, \date definidas acima
+
+\clearpage
+\pagenumbering{arabic} % Reinicia a numeração de página com algarismos arábicos a partir daqui
+\setcounter{page}{1} % Inicia a contagem de páginas do corpo do documento em 1
+
+% Sumário
+\tableofcontents
+\clearpage
+
+% Corpo principal do documento
+\input{content/main_content.tex}
+
+\end{document}

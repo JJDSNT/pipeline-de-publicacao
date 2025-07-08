@@ -1,0 +1,29 @@
+% projetos/liderando_transformacao/templates/tex/setup/configurations.tex.j2
+
+% --- Configuração de Layout e Margens ---
+{% if styles.document_settings and styles.document_settings.margins %}
+\geometry{margin={{ styles.document_settings.margins | replace('cm', 'cm') }}}
+{% else %}
+\geometry{
+  a4paper,
+  left={{ styles.document_margins_cm }}cm,
+  right={{ styles.document_margins_cm }}cm,
+  top={{ styles.document_margins_cm }}cm,
+  bottom={{ styles.document_margins_cm }}cm
+}
+{% endif %}
+
+% --- Espaçamento de Linha ---
+\setstretch{ {% if styles.paragraph_default and styles.paragraph_default["line-height"] %}{{ styles.paragraph_default["line-height"] }}{% else %}{{ styles.paragraph_default_line_height }}{% endif %} }
+
+
+% --- Hyperref Setup ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={{ content.title | escape_latex }},
+    pdfauthor={{ content.author | escape_latex }},
+    linktocpage=true % Makes the page number in the toc clickable
+}
