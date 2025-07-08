@@ -15,20 +15,20 @@ def verify_latex_output(project_name: str, lang: str):
         return False
     config = json.loads(config_path.read_text(encoding="utf-8"))
 
-    styles_file_path = base_path / config["estilos"]
+    styles_file_path = base_path / "estilos" / "estilo_livro.json" # Caminho fixo conforme gerar_latex.py
     if not styles_file_path.exists():
-        print(f"❌ Erro: Arquivo de estilos '{config['estilos']}' não encontrado. Caminho esperado: {styles_file_path}.")
+        print(f"❌ Erro: Arquivo de estilos '{styles_file_path}' não encontrado. Caminho esperado: {styles_file_path}.")
         return False
     styles_data = json.loads(styles_file_path.read_text(encoding="utf-8"))
 
-    metadados_file_path = base_path / config["metadados"][lang]
-    if not metadados_file_path.exists():
-        print(f"❌ Erro: Arquivo de metadados '{config['metadados'][lang]}' não encontrado. Caminho esperado: {metadados_file_path}.")
-        return False
-    metadados_data = json.loads(metadados_file_path.read_text(encoding="utf-8"))
+    # Metadados são lidos diretamente do config.json, não de um arquivo separado
+    expected_title = config.get("titulos", {}).get("TITULO_PRINCIPAL", "Livro Digital")
+    expected_author = config.get("autor", "Autor Desconhecido")
+    data_publicacao_from_config = config.get("data_publicacao", "")
 
-    # Simula a data que seria usada na geração
+    # Simula a data atual no formato usado na geração, se data_publicacao não for especificada
     today_formatted = datetime.date.today().strftime("%d de %B de %Y")
+    expected_date_for_comparison = data_publicacao_from_config if data_publicacao_from_config else today_formatted
 
     # --- Carrega o Conteúdo do Arquivo .tex Gerado ---
     generated_tex_path = base_path / "gerado_automaticamente" / lang / "tex" / "livro_completo_para_latex.tex"
@@ -44,8 +44,6 @@ def verify_latex_output(project_name: str, lang: str):
 
     # --- VERIFICAÇÃO DE METADADOS (Título, Autor, Data) ---
     print("\n--- Verificando Metadados do Livro ---")
-    expected_title = metadados_data.get("titulo_livro", "N/A")
-    expected_author = metadados_data.get("autor", "N/A")
 
     # Título
     title_match = re.search(r"\\title\{(.*?)\}", generated_tex_content)
@@ -65,10 +63,10 @@ def verify_latex_output(project_name: str, lang: str):
 
     # Data
     date_match = re.search(r"\\date\{(.*?)\}", generated_tex_content)
-    if date_match and date_match.group(1).strip() == today_formatted.strip():
+    if date_match and date_match.group(1).strip() == expected_date_for_comparison.strip():
         print(f"✅ Data encontrada e corresponde: '{date_match.group(1)}'")
     else:
-        print(f"❌ Data NÃO corresponde ou não encontrada. Esperado: '{today_formatted}', Encontrado: '{date_match.group(1) if date_match else 'NÃO ENCONTRADO'}'")
+        print(f"❌ Data NÃO corresponde ou não encontrada. Esperado: '{expected_date_for_comparison}', Encontrado: '{date_match.group(1) if date_match else 'NÃO ENCONTRADO'}'")
         overall_status = False
 
     # Maketitle
@@ -93,7 +91,7 @@ def verify_latex_output(project_name: str, lang: str):
         if custom_colors_found:
             print("✅ Pelo menos uma cor personalizada do styles.json foi encontrada.")
         else:
-             print("❌ Nenhuma cor personalizada do styles.json foi encontrada. Verificando fallbacks...")
+            print("❌ Nenhuma cor personalizada do styles.json foi encontrada. Verificando fallbacks...")
     else:
         print("ℹ️ Nenhuma seção 'colors' ou seção 'colors' vazia no styles.json. Verificando cores padrão.")
 
@@ -192,7 +190,7 @@ def verify_latex_output(project_name: str, lang: str):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Verifica se as variáveis dos arquivos JSON foram corretamente injetadas no arquivo LaTeX gerado.")
     parser.add_argument("--projeto", required=True, help="Nome do projeto (ex: liderando_transformacao)")
-    parser.add_argument("--idioma", default="pt-BR", help="Idioma (ex: pt-BR)") 
+    parser.add_argument("--idioma", default="pt-BR", help="Idioma (ex: pt-BR)")
 
     args = parser.parse_args()
     verify_latex_output(args.projeto, args.idioma)

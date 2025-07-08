@@ -1,75 +1,45 @@
-% projetos/liderando_transformacao/templates/tex/setup/styles.tex.j2
-
 % --- Definição de Cores Personalizadas ---
 {% if styles.colors %}
     {% for name, hex_code in styles.colors.items() %}
-        \definecolor{ {{ name }} }{HTML}{{ hex_code | replace("#", "") }}
+\definecolor{{ '{' }}{{ name|trim|replace(" ", "_") }}{{ '}' }}{{ '{' }}HTML{{ '}' }}{{ '{' }}{{ hex_code|replace("#", "")|trim }}{{ '}' }}
     {% endfor %}
 {% else %}
     % Cores padrão se não definidas nos dados
-    \definecolor{ text_gray }{HTML}{333333}
-    \definecolor{ DarkBlueHeading }{HTML}{000080}
+    \definecolor{{ '{' }}text_gray{{ '}' }}{{ '{' }}HTML{{ '}' }}{{ '{' }}333333{{ '}' }}
+    \definecolor{{ '{' }}DarkBlueHeading{{ '}' }}{{ '{' }}HTML{{ '}' }}{{ '{' }}000080{{ '}' }}
 {% endif %}
 
-
-% --- Configurações de Fonte com Fontspec para XeLaTeX ---
+% --- Configurações de Fonte ---
 {% if styles.paragraph_default and styles.paragraph_default["font-family"] %}
-\setmainfont{{ styles.paragraph_default["font-family"] }}
+\setmainfont{{ '{' }}{{ styles.paragraph_default["font-family"]|trim }}{{ '}' }}
 {% else %}
-\setmainfont{Latin Modern Roman}
+\setmainfont{{ '{' }}Latin Modern Roman{{ '}' }}
 {% endif %}
 
 {% if styles.heading_1 and styles.heading_1["font-family"] %}
-\setsansfont{{ styles.heading_1["font-family"] }}
+\setsansfont{{ '{' }}{{ styles.heading_1["font-family"]|trim }}{{ '}' }}
 {% else %}
-\setsansfont{Latin Modern Sans}
+\setsansfont{{ '{' }}Latin Modern Sans{{ '}' }}
 {% endif %}
 
-% --- Títulos (titlesec) ---
-% Título do Documento/Livro (no maketitle)
-\titleformat{\section}[display]
-  {\bfseries\centering\Huge\color{DarkBlueHeading}}
-  {}
-  {0pt}
-  {\normalfont}
+% --- Formatação de Títulos ---
+\titleformat{{ '{' }}\chapter{{ '}' }}[display]
+  {{ '{' }}\bfseries\centering\Huge\color{{ '{' }}DarkBlueHeading{{ '}' }}{{ '}' }}
+  {{ '{' }}\chaptertitlename\ \thechapter{{ '}' }}
+  {{ '{' }}20pt{{ '}' }}
+  {{ '{' }}\Huge{{ '}' }}
 
-% Customizações para Capítulos/Seções (\section em article)
-\titleformat{\section}[hang] % [hang] para título pendurado (indentado)
-  {\sffamily\bfseries\color{DarkBlueHeading}\fontsize{ {% if styles.heading_1["font-size"] %}{{ styles.heading_1["font-size"] }}{% else %}24pt{% endif %}}{ {% if styles.heading_1["line-spacing"] %}{{ styles.heading_1["line-spacing"] }}{% else %}28.8pt{% endif %}}\selectfont}
-  {}
-  {0pt} % Sem separação horizontal entre número/título
-  {\raggedright} % Alinhamento do título
-\titlespacing*{\section}
-  {0pt}{ {% if styles.heading_1["margin-top"] %}{{ styles.heading_1["margin-top"] }}{% else %}1.0cm{% endif %}}{ {% if styles.heading_1["margin-bottom"] %}{{ styles.heading_1["margin-bottom"] }}{% else %}0.5cm{% endif %} }
+\titleformat{{ '{' }}\section{{ '}' }}[hang]
+  {{ '{' }}\sffamily\bfseries\color{{ '{' }}DarkBlueHeading{{ '}' }}\fontsize{{ '{' }}{% if styles.heading_1 and styles.heading_1["font-size"] %}{{ styles.heading_1["font-size"]|replace("pt", "")|trim }}{% else %}24{% endif %}pt{{ '}' }}{{ '{' }}{% if styles.heading_1 and styles.heading_1["line-spacing"] %}{{ styles.heading_1["line-spacing"]|replace("pt", "")|trim }}{% else %}28.8{% endif %}pt{{ '}' }}\selectfont{{ '}' }}
+  {{ '{' }}\thesection{{ '}' }}
+  {{ '{' }}1em{{ '}' }}
+  {{ '{' }}{{ '}' }}
+
+\titlespacing*{{ '{' }}\section{{ '}' }}
+  {{ '{' }}0pt{{ '}' }}{{ '{' }}{% if styles.heading_1 and styles.heading_1["margin-top"] %}{{ styles.heading_1["margin-top"]|replace("cm", "")|trim }}{% else %}1.0{% endif %}cm{{ '}' }}{{ '{' }}{% if styles.heading_1 and styles.heading_1["margin-bottom"] %}{{ styles.heading_1["margin-bottom"]|replace("cm", "")|trim }}{% else %}0.5{% endif %}cm{{ '}' }}
 
 % --- Ajustes de Parágrafo ---
-\setlength{\parindent}{ {% if styles.paragraph_default and styles.paragraph_default["text-indent"] %}{{ styles.paragraph_default["text-indent"] | replace("cm", "cm") }}{% else %}{{ styles.paragraph_default.text_indent }}{% endif %} }
-\setlength{\parskip}{ {% if styles.paragraph_default and styles.paragraph_default["margin-bottom"] %}{{ styles.paragraph_default["margin-bottom"] | replace("cm", "cm") }}{% else %}{{ styles.paragraph_default.margin_bottom }}{% endif %} }
-\DeclareRobustCommand{\paragraphbreak}{\vspace{ {% if styles.paragraph_default and styles.paragraph_default["margin-bottom"] %}{{ styles.paragraph_default["margin-bottom"] | replace("cm", "cm") }}{% else %}{{ styles.paragraph_default.margin_bottom }}{% endif %} }\noindent} % Adiciona espaço entre parágrafos
+\setlength{{ '{' }}\parindent{{ '}' }}{{ '{' }}{% if styles.paragraph_default and styles.paragraph_default["text-indent"] %}{{ styles.paragraph_default["text-indent"]|replace("cm", "")|trim }}{% else %}0.5{% endif %}cm{{ '}' }}
+\setlength{{ '{' }}\parskip{{ '}' }}{{ '{' }}{% if styles.paragraph_default and styles.paragraph_default["margin-bottom"] %}{{ styles.paragraph_default["margin-bottom"]|replace("cm", "")|trim }}{% else %}0.2{% endif %}cm{{ '}' }}
 
-% Definir cor padrão do texto (se aplicável e mapeável)
-{% if styles.paragraph_default and styles.paragraph_default["color"] %}
-    % Apenas um exemplo - você precisaria de um filtro ou lógica no Python
-    % para mapear 'hex_code' para um 'nome_da_cor_latex' definido em `\definecolor`
-    % Por exemplo, se styles.paragraph_default["color"] for "#333333", e você definiu \definecolor{text_gray}{HTML}{333333}
-    % Poderia ser assim: \color{text_gray}
-    % Ou se a cor for sempre um nome que você definiu: \color{{ styles.paragraph_default["color"] }}
-{% endif %}
-
-% --- CONFIGURAÇÕES DE SUMÁRIO COM TOCLOFT ---
-% Define a largura do espaço para os números de página (ajuste conforme necessário)
-\setlength{\cftchapnumwidth}{2.5em} % Para capítulos (parte neste caso)
-\setlength{\cftsecnumwidth}{3.5em} % Para seções (capítulos neste caso)
-
-% Adiciona líderes (pontinhos) para partes e seções
-\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}}
-\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
-
-% Ajusta a formatação dos títulos no sumário (ex: negrito)
-\renewcommand{\cftpartfont}{\bfseries} % Partes em negrito no sumário
-\renewcommand{\cftsecfont}{\mdseries} % Seções em fonte média no sumário (normal)
-
-% Ajusta os espaçamentos das entradas no sumário
-\setlength{\cftbeforechapskip}{0.5\baselineskip} % Espaço antes de cada 'part'
-\setlength{\cftbeforesecskip}{0.2\baselineskip} % Espaço antes de cada 'section'
-% --- FIM DAS CONFIGURAÇÕES DE SUMÁRIO ---
+\DeclareRobustCommand{{ '{' }}\paragraphbreak{{ '}' }}{{ '{' }}\vspace{{ '{' }}{% if styles.paragraph_default and styles.paragraph_default["margin-bottom"] %}{{ styles.paragraph_default["margin-bottom"]|replace("cm", "")|trim }}{% else %}0.2{% endif %}cm{{ '}' }}\noindent{{ '}' }}

@@ -1,21 +1,17 @@
 % projetos/liderando_transformacao/templates/tex/setup/configurations.tex.j2
+% Template Jinja2 para configurações dos pacotes LaTeX (processado para gerar configurations.tex)
 
 % --- Configuração de Layout e Margens ---
-{% if styles.document_settings and styles.document_settings.margins %}
-\geometry{margin={{ styles.document_settings.margins | replace('cm', 'cm') }}}
-{% else %}
 \geometry{
   a4paper,
-  left={{ styles.document_margins_cm }}cm,
-  right={{ styles.document_margins_cm }}cm,
-  top={{ styles.document_margins_cm }}cm,
-  bottom={{ styles.document_margins_cm }}cm
+  left=2.5cm,
+  right=2.5cm,
+  top=2.5cm,
+  bottom=2.5cm
 }
-{% endif %}
 
 % --- Espaçamento de Linha ---
-\setstretch{ {% if styles.paragraph_default and styles.paragraph_default["line-height"] %}{{ styles.paragraph_default["line-height"] }}{% else %}{{ styles.paragraph_default_line_height }}{% endif %} }
-
+\setstretch{1.2}
 
 % --- Hyperref Setup ---
 \hypersetup{
@@ -23,7 +19,51 @@
     linkcolor=blue,
     filecolor=magenta,      
     urlcolor=cyan,
-    pdftitle={{ content.title | escape_latex }},
-    pdfauthor={{ content.author | escape_latex }},
+    pdftitle={{ metadados.titulo_livro | replace("\n", " ") }},
+    pdfauthor={{ metadados.autor | replace("\n", " ") }},
     linktocpage=true % Makes the page number in the toc clickable
 }
+
+% --- Definição de Cores Personalizadas ---
+\definecolor{principal}{HTML}{1a202c}
+\definecolor{secundaria}{HTML}{2d3748}
+\definecolor{suave}{HTML}{4a5568}
+\definecolor{mais_suave}{HTML}{718096}
+\definecolor{mais_clara}{HTML}{a0aec0}
+\definecolor{titulo_principal}{HTML}{1a365d}
+\definecolor{azul_claro}{HTML}{f0f8ff}
+\definecolor{laranja_claro}{HTML}{fff8f0}
+\definecolor{verde_claro}{HTML}{f0fff4}
+\definecolor{roxo_claro}{HTML}{faf5ff}
+\definecolor{vermelho_claro}{HTML}{fff5f5}
+\definecolor{cinza_escuro}{HTML}{f7fafc}
+\definecolor{amarelo_claro}{HTML}{fff3cd}
+\definecolor{azul_medio}{HTML}{e2e8f0}
+\definecolor{azul}{HTML}{3182ce}
+\definecolor{laranja}{HTML}{ed8936}
+\definecolor{verde}{HTML}{38a169}
+\definecolor{roxo}{HTML}{805ad5}
+\definecolor{vermelho}{HTML}{e53e3e}
+\definecolor{text_gray}{HTML}{333333}
+\definecolor{DarkBlueHeading}{HTML}{000080}
+
+% --- Configurações de Fonte ---
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+
+% --- Formatação de Títulos ---
+% Nota: \chapter removido pois article class não suporta chapters
+\titleformat{\section}[hang]
+  {\sffamily\bfseries\color{DarkBlueHeading}\fontsize{24.0pt}{28.8pt}\selectfont}
+  {\thesection}
+  {1em}
+  {}
+
+\titlespacing*{\section}
+  {0pt}{1.0cm}{0.5cm}
+
+% --- Ajustes de Parágrafo ---
+\setlength{\parindent}{0.5cm}
+\setlength{\parskip}{0.2cm}
+
+\DeclareRobustCommand{\paragraphbreak}{\vspace{0.2cm}\noindent}

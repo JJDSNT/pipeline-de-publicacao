@@ -1,18 +1,9 @@
-% projetos/liderando_transformacao/templates/tex/main.tex.j2
-\documentclass[10pt]{article}
+% projetos/liderando_transformacao/templates/tex/content/main_content.tex.j2
 
-% Carrega pacotes
-\input{setup/packages.tex}
+% Este template é responsável por incluir todas as seções (partes e capítulos) do livro.
+% O script Python 'gerar_latex.py' gera arquivos individuais para cada seção
+% (usando section_item.tex.j2) e passa uma lista desses nomes de arquivos.
 
-% Carrega configurações gerais
-\input{setup/configurations.tex}
-
-% Carrega definições de estilo (cores, fontes, titulos, parágrafos, sumário)
-\input{setup/styles.tex}
-
-\begin{document}
-
-% Inclui o conteúdo principal (título, sumário e seções)
-\input{content/main_content.tex}
-
-\end{document}
+{% for section_file in section_files %}
+\input{content/{{ section_file }}}
+{% endfor %}

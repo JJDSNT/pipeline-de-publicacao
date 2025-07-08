@@ -1,23 +1,47 @@
 % projetos/liderando_transformacao/templates/tex/setup/packages.tex.j2
+% Template Jinja2 para pacotes LaTeX (processado para gerar packages.tex)
 
+% --- Pacotes Essenciais ---
+\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[main={{ lang }}]{babel} % Idioma principal. ex: brazil, english
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{hyperref}
 
-% --- *** IMPORTANTE: AJUSTE DO XCOLOR AQUI *** ---
-% Passa opções para o xcolor ANTES que ele seja carregado por outros pacotes (como hyperref).
-\PassOptionsToPackage{xetex,table,dvipsnames,svgnames,x11names}{xcolor}
+% --- Pacotes para Cores e Fontes ---
 \usepackage{xcolor}
-% --- FIM DO AJUSTE DO XCOLOR ---
+\usepackage{fontspec}
 
-\usepackage{fontspec}      % Para configurações de fonte com XeLaTeX
-\usepackage{geometry}      % Para layout e margens
-\usepackage{setspace}      % Para espaçamento de linha
-\usepackage{titlesec}      % Para formatação de títulos
-\usepackage{indentfirst}   % Para indentar o primeiro parágrafo de cada seção
-\usepackage{hyperref}      % Para links internos e índice clicável
-\usepackage{enumitem}      % Para listas personalizadas
-\usepackage{ragged2e}      % Para justificação de texto
-\usepackage{graphicx}      % Para inclusão de imagens
-\usepackage{tocloft}       % Para configurações de sumário
-\usepackage{amsmath}       % Adicionado: Para equações matemáticas
-\usepackage[utf8]{inputenc} % Adicionado: Para codificação de entrada, embora menos crítico com XeLaTeX
+% --- Pacotes para Formatação de Títulos ---
+\usepackage{titlesec}
+\usepackage{titletoc}
+
+% --- Pacotes para Sumário ---
+\usepackage{tocloft}
+
+% --- Pacotes para Listas ---
+\usepackage{enumitem}
+
+% --- Pacotes para Tabelas ---
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+
+% --- Pacotes para Matemática ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- Pacotes para Código ---
+\usepackage{listings}
+\usepackage{verbatim}
+
+% --- Pacotes para Espaçamento ---
+\usepackage{setspace}
+
+% --- Outros Pacotes Úteis ---
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{microtype}

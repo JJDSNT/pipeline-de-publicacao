@@ -6,12 +6,13 @@ import sys
 import re
 import subprocess
 import time
+import datetime # Importar datetime para a data atual
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 # Adiciona o diretório raiz do projeto ao sys.path para importações
 script_dir = Path(__file__).resolve().parent
-project_root = script_dir.parent 
+project_root = script_dir.parent
 sys.path.insert(0, str(project_root))
 
 from utils.cleaner import clean_title_for_output
@@ -54,7 +55,7 @@ def convert_markdown_to_latex(markdown_text: str) -> str:
         latex_output = latex_output.replace('\\tightlist\n', '')
         # A remoção do emoji será feita pelo filtro escape_latex no Jinja2 agora,
         # mas mantemos aqui por segurança se esta função for usada isoladamente.
-        latex_output = latex_output.replace('📌', '') 
+        latex_output = latex_output.replace('📌', '')
         return latex_output
     except FileNotFoundError:
         print("❌ Erro: Pandoc não encontrado. Certifique-se de que está instalado e no PATH.")
@@ -63,7 +64,7 @@ def convert_markdown_to_latex(markdown_text: str) -> str:
     except subprocess.CalledProcessError as e:
         print(f"❌ Erro ao converter Markdown para LaTeX com Pandoc: {e}")
         print(f"Stderr: {e.stderr.decode('utf-8')}")
-        return markdown_text 
+        return markdown_text
 
 
 def gerar_latex(projeto: str, idioma_arg: str):
@@ -72,10 +73,10 @@ def gerar_latex(projeto: str, idioma_arg: str):
 
     base_dir = Path("projetos") / projeto
     config_path = base_dir / "config.json"
-    
+
     templates_dir = base_dir / "templates" / "tex"
     estilos_config_path = base_dir / "estilos" / "estilo_livro.json"
-    
+
     # --- Normalização do Idioma ---
     if idioma_arg.lower() == "pt-br":
         idioma_normalizado_para_path = "pt-BR"
@@ -85,7 +86,7 @@ def gerar_latex(projeto: str, idioma_arg: str):
         idioma_para_latex = "english"
     else:
         idioma_normalizado_para_path = idioma_arg
-        idioma_para_latex = "english" 
+        idioma_para_latex = "english"
 
     # --- NOVO: Diretorios de Saída para os arquivos LaTeX modulares ---
     latex_output_root_dir = base_dir / "gerado_automaticamente" / idioma_normalizado_para_path / "tex"
@@ -96,26 +97,26 @@ def gerar_latex(projeto: str, idioma_arg: str):
     latex_output_root_dir.mkdir(parents=True, exist_ok=True)
     latex_output_setup_dir.mkdir(parents=True, exist_ok=True)
     latex_output_content_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # --- NOVO NOME PARA O ARQUIVO .TEX PRINCIPAL ---
     # Este será o arquivo que o xelatex irá compilar
-    output_main_tex_filename = "livro_completo_para_latex.tex" 
+    output_main_tex_filename = "livro_completo_para_latex.tex"
     output_main_tex_path = latex_output_root_dir / output_main_tex_filename
 
     # Criar a pasta 'output' para o PDF final (caso não exista)
     pdf_final_output_dir = base_dir / "output" / idioma_normalizado_para_path
     pdf_final_output_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"   Caminhos configurados:")
-    print(f"     Diretório Base do Projeto: {base_dir.resolve()}")
-    print(f"     Arquivo de Configuração: {config_path.resolve()}")
-    print(f"     Diretório de Templates LaTeX: {templates_dir.resolve()}")
-    print(f"     Arquivo de Estilos: {estilos_config_path.resolve()}")
-    print(f"     Diretório de Saída LaTeX Raiz: {latex_output_root_dir.resolve()}")
-    print(f"     Diretório de Saída LaTeX Setup: {latex_output_setup_dir.resolve()}")
-    print(f"     Diretório de Saída LaTeX Conteúdo: {latex_output_content_dir.resolve()}")
-    print(f"     Arquivo LaTeX Principal de Saída: {output_main_tex_path.resolve()}")
-    print(f"     Diretório de Saída do PDF Final: {pdf_final_output_dir.resolve()}")
+    print(f"    Caminhos configurados:")
+    print(f"      Diretório Base do Projeto: {base_dir.resolve()}")
+    print(f"      Arquivo de Configuração: {config_path.resolve()}")
+    print(f"      Diretório de Templates LaTeX: {templates_dir.resolve()}")
+    print(f"      Arquivo de Estilos: {estilos_config_path.resolve()}")
+    print(f"      Diretório de Saída LaTeX Raiz: {latex_output_root_dir.resolve()}")
+    print(f"      Diretório de Saída LaTeX Setup: {latex_output_setup_dir.resolve()}")
+    print(f"      Diretório de Saída LaTeX Conteúdo: {latex_output_content_dir.resolve()}")
+    print(f"      Arquivo LaTeX Principal de Saída: {output_main_tex_path.resolve()}")
+    print(f"      Diretório de Saída do PDF Final: {pdf_final_output_dir.resolve()}")
 
 
     if not config_path.exists():
@@ -126,7 +127,7 @@ def gerar_latex(projeto: str, idioma_arg: str):
         print(f"❌ Diretório de templates LaTeX não encontrado: {templates_dir.resolve()}")
         print(f"Por favor, crie a pasta: {templates_dir.resolve()}")
         return
-    
+
     # Configurar Jinja2 Environment
     env = Environment(
         loader=FileSystemLoader(templates_dir),
@@ -137,9 +138,11 @@ def gerar_latex(projeto: str, idioma_arg: str):
     env = setup_jinja_env_with_filters(env) # Aplica os filtros, incluindo escape_latex
 
     config_data = json.loads(config_path.read_text(encoding="utf-8"))
-    titulo_livro = config_data.get("titulo", "Livro Digital")
+    # Ajustado para ler do seu config.json
+    titulo_livro = config_data.get("titulos", {}).get("TITULO_PRINCIPAL", "Livro Digital")
     autor_livro = config_data.get("autor", "Autor Desconhecido")
-    
+    data_publicacao_config = config_data.get("data_publicacao", "") # Para metadados no template
+
     raw_styles_data = {}
     if estilos_config_path.exists():
         try:
@@ -150,7 +153,7 @@ def gerar_latex(projeto: str, idioma_arg: str):
             print("Usando estilos padrão/fallback para continuar.")
     else:
         print(f"⚠️ Arquivo de estilos não encontrado em: {estilos_config_path.resolve()}. Usando estilos padrão/fallback.")
-    
+
     processed_styles = {}
 
     # Processar estilos de parágrafo
@@ -179,25 +182,36 @@ def gerar_latex(projeto: str, idioma_arg: str):
     processed_styles["document_margins_cm"] = parse_dimension(raw_styles_data.get("document_margins", "2.5cm"), 2.5)
     processed_styles["document_settings"] = raw_styles_data.get("document_settings", {}) # Para margens dinâmicas
 
-    # Processar cores
-    # Garantir que cores essenciais tenham um fallback SE NÃO ESTIVEREM NO JSON
+    # --- INÍCIO DA LÓGICA DE PROCESSAMENTO DE CORES ATUALIZADA ---
     processed_colors = {}
-    raw_defined_colors = raw_styles_data.get("colors", {})
-    for name, hex_val in raw_defined_colors.items():
-        if isinstance(hex_val, str) and hex_val.startswith("#"):
-            processed_colors[name] = hex_val[1:]
-        else:
-            processed_colors[name] = hex_val
-            
+    
+    # Coleta todas as cores definidas no metadata do estilo_livro.json
+    if "metadata" in raw_styles_data and isinstance(raw_styles_data["metadata"], dict):
+        for color_group_key in ["cores_texto", "cores_fundo_destaque", "cores_borda_destaque"]:
+            if color_group_key in raw_styles_data["metadata"] and isinstance(raw_styles_data["metadata"][color_group_key], dict):
+                for name, hex_val in raw_styles_data["metadata"][color_group_key].items():
+                    if isinstance(hex_val, str) and hex_val.startswith("#"):
+                        processed_colors[name] = hex_val[1:]
+                    else:
+                        # Se não for uma string de hex com '#', armazena como está
+                        # Cuidado: isto pode causar problemas se hex_val não for um formato válido para LaTeX
+                        processed_colors[name] = hex_val 
+    
+    # Garantir que cores essenciais tenham um fallback (caso não estejam nas cores do metadata)
+    # Estas sobrescreverão qualquer cor de mesmo nome coletada do metadata, se existirem
     processed_colors["text_gray"] = processed_colors.get("text_gray", "333333")
     processed_colors["DarkBlueHeading"] = processed_colors.get("DarkBlueHeading", "000080")
+    
     processed_styles["colors"] = processed_colors
 
     # Gerar definições de cores LaTeX para injeção no template de estilos
     custom_color_definitions = []
     for color_name, hex_value in processed_styles["colors"].items():
-        custom_color_definitions.append(f"\\definecolor{{{color_name}}}{{HTML}}{{{hex_value}}}")
+        # Assegura que hex_value seja uma string e remova '#' se presente
+        final_hex = hex_value.replace("#", "") if isinstance(hex_value, str) else str(hex_value)
+        custom_color_definitions.append(f"\\definecolor{{{color_name}}}{{HTML}}{{{final_hex}}}")
     processed_styles["custom_color_definitions"] = "\n".join(custom_color_definitions)
+    # --- FIM DA LÓGICA DE PROCESSAMENTO DE CORES ATUALIZADA ---
 
 
     livro_path = base_dir / "gerado_automaticamente" / idioma_normalizado_para_path / "livro_estruturado.json"
@@ -212,7 +226,7 @@ def gerar_latex(projeto: str, idioma_arg: str):
         "author": autor_livro,
         "sections": [] # Esta lista será populada com os dados brutos das seções
     }
-    
+
     # Processar o conteúdo do livro para LaTeX e preparar para templates modulares
     for item in livro_data.get("conteudo", []):
         section_content_latex = []
@@ -223,7 +237,7 @@ def gerar_latex(projeto: str, idioma_arg: str):
                 "type": "raw_latex",
                 "text": latex_converted_text
             })
-        
+
         if item["tipo"] == "parte":
             processed_content["sections"].append({
                 "type": "heading_part",
@@ -236,15 +250,28 @@ def gerar_latex(projeto: str, idioma_arg: str):
                 "text": clean_title_for_output(item.get("titulo1", f"Capítulo {len(processed_content['sections']) + 1}")),
                 "content": section_content_latex
             })
-    
+
     # --- NOVO: Renderizar e Salvar os Arquivos Modulares ---
+
+    # Prepara os metadados para o template, usando os dados do config.json
+    metadados_for_template = {
+        "titulo_livro": titulo_livro,
+        "autor": autor_livro,
+        "data_publicacao": data_publicacao_config,
+        "descricao": config_data.get("descricao", ""),
+        "palavras_chave": config_data.get("palavras_chave", []),
+        "licenca": config_data.get("licenca", "")
+    }
 
     # Contexto base para todos os templates
     base_context = {
         'lang': idioma_para_latex,
         'content': processed_content, # Passa o content_data completo para todos os templates
         'styles': processed_styles,
-        'custom_color_definitions': processed_styles["custom_color_definitions"]
+        'custom_color_definitions': processed_styles["custom_color_definitions"],
+        'metadados': metadados_for_template, # AGORA 'metadados' ESTÁ NO CONTEXTO
+        'hoje': datetime.date.today().strftime("%d de %B de %Y"), # Garante que 'hoje' está no contexto
+        'config': config_data # Opcional: passa o config_data completo também
     }
 
     # 1. Renderizar setup/packages.tex
@@ -276,18 +303,18 @@ def gerar_latex(projeto: str, idioma_arg: str):
         # Gera um nome de arquivo sanitizado baseado no tipo e título da seção
         # Adiciona um índice para garantir unicidade
         section_filename_base = f"{section_data['type']}_{sanitize_filename(section_data['text'])}"
-        section_filename = f"{section_filename_base}_{i+1}.tex" 
-        
+        section_filename = f"{section_filename_base}_{i+1}.tex"
+
         # Renderiza o template de item de seção com os dados da seção atual
         section_output = section_item_template.render(section=section_data)
         section_filepath = latex_output_content_dir / section_filename
-        
+
         with open(section_filepath, 'w', encoding='utf-8') as f:
             f.write(section_output)
-        
+
         section_files_generated.append(section_filename)
         print(f"✅ Gerado: {section_filepath}")
-    
+
     # Adicionar a lista de nomes de arquivos de seção gerados ao contexto para main_content.tex.j2
     base_context['section_files'] = section_files_generated
 
@@ -299,7 +326,7 @@ def gerar_latex(projeto: str, idioma_arg: str):
     print(f"✅ Gerado: {latex_output_content_dir / 'main_content.tex'}")
 
     # 6. Renderizar o arquivo principal (main.tex)
-    main_template = env.get_template('main.tex.j2') 
+    main_template = env.get_template('main.tex.j2')
     latex_output = main_template.render(base_context)
     with open(output_main_tex_path, "w", encoding="utf-8") as f:
         f.write(latex_output)
