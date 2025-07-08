@@ -1,75 +1,91 @@
 \documentclass[
-  {% if styles.paragraph_default["font-size"] %}{{ styles.paragraph_default["font-size"] | replace("pt", "") }}pt{% endif %}
+  {{ styles.paragraph_default_font_size_pt }}pt
 ]{article}
 
 \usepackage[
-  {% if styles.document_margins %}
-    {{ styles.document_margins | replace("cm", "cm") }}
-  {% else %}
-    margin=2.5cm
-  {% endif %}
+  margin={{ styles.document_margins_cm }}cm
 ]{geometry}
 \usepackage{fontspec} % Para controle de fontes modernas (XeLaTeX/LuaLaTeX)
 \usepackage{xcolor}
 \usepackage{titlesec}
 \usepackage{setspace}
 \usepackage{enumitem} % Para listas
+\usepackage{ragged2e} % Para \justifying (se precisar de justificação completa)
+\usepackage[{{ lang }}]{babel} % Suporte a idiomas (brazil, english)
 
 % Mapeamento de Cores
-{% if styles.colors %}
-  {% for name, hex in styles.colors.items() %}
-    \definecolor{% raw %}{{% endraw %}{{ name }}{% raw %}}{% endraw %}}{HTML}{% raw %}{{% endraw %}{{ hex | replace("#", "") }}{% raw %}}{% endraw %}}
-  {% endfor %}
-{% else %}
-  \definecolor{text_gray}{HTML}{333333}
-  \definecolor{DarkBlueHeading}{HTML}{000080}
-{% endif %}
+{% for name, hex in styles.colors.items() %}
+\definecolor{ {{- name -}} }{HTML}{ {{- hex -}} }
+{% endfor %}
 
 % Configurações de Fontes
-{% if styles.paragraph_default["font-family"] %}
-  \setmainfont{% raw %}{{% endraw %}{{ styles.paragraph_default["font-family"] }}{% raw %}}{% endraw %}
-{% endif %}
-{% if styles.heading_1["font-family"] %}
-  \setsansfont{% raw %}{{% endraw %}{{ styles.heading_1["font-family"] }}{% raw %}}{% endraw %}
-{% endif %}
+\setmainfont{ {{- styles.paragraph_default_font_family -}} }
+\setsansfont{ {{- styles.heading_1_font_family -}} }
 
 % Estilo de Parágrafo Padrão
-{% if styles.paragraph_default %}
-  \setlength{\parindent}{{% raw %}{{% endraw %}{{ styles.paragraph_default["text-indent"] | replace("cm", "cm") }}{% raw %}}{% endraw %}}
-  \linespread{{ styles.paragraph_default["line-height"] }}
-  \parskip={% raw %}{{% endraw %}{{ styles.paragraph_default["margin-bottom"] | replace("cm", "cm") }}{% raw %}}{% endraw %}
-  \color{% raw %}{{% endraw %}{{ styles.paragraph_default["color"] | replace("#", "customcolor") }}{% raw %}}{% endraw %} % Pode exigir uma função para mapear HEX para nome de cor LaTeX
-{% endif %}
+\setlength{\parindent}{ {{- styles.paragraph_default_text_indent_cm -}} cm}
+\linespread{ {{- styles.paragraph_default_line_height -}} }
+\parskip={{ styles.paragraph_default_margin_bottom_cm }}cm plus 1pt % Adicionado "plus 1pt" para evitar badbox
+\color{ {{- styles.paragraph_default_color_name -}} }
 
-% Estilo de Título Nível 1
-{% if styles.heading_1 %}
-  \titleformat{\section}
-    {{\\fontsize{% raw}{{% endraw %}{{ styles.heading_1["font-size"] | replace("pt", "") }}pt}{{% raw}{{% endraw %}{{ (styles.heading_1["font-size"] | replace("pt", "") | float * 1.2) | round(2) }}pt}\\selectfont}
-    \\textbf{{\\color{% raw}{{% endraw %}{{ styles.heading_1["color"] | replace("#", "customcolor") }}{% raw}{{% endraw %}}}}
-    {}
-    {0pt}{}
-  [\vspace{{ styles.heading_1["margin-top"] | replace("cm", "cm") }}] % Espaço antes
-  \titlespacing*{\section}{0pt}{0pt}{{% raw}{{% endraw %}{{ styles.heading_1["margin-bottom"] | replace("cm", "cm") }}{% raw}{{% endraw %}}} % Espaço depois
-{% endif %}
+% Estilo de Título Nível 1 (Section)
+\titleformat{\section}
+  {\fontsize{ {{- styles.heading_1_font_size_pt -}} pt}{ {{- styles.heading_1_line_spacing_pt -}} pt}\selectfont}
+  {\textbf{\color{ {{- styles.heading_1_color_name -}} }}}
+  {}
+  {0pt}{}
+[\vspace{ {{- styles.heading_1_margin_top_cm -}} cm}] % Espaço antes
+\titlespacing*{\section}{0pt}{0pt}{ {{- styles.heading_1_margin_bottom_cm -}} cm} % Espaço depois
 
 \begin{document}
 
-\title{% raw}{{% endraw %}{{ content.title }}{% raw}{{% endraw %}}
-\author{% raw}{{% endraw %}{{ content.author }}{% raw}{{% endraw %}}
+\title{ {{- content.title -}} }
+\author{ {{- content.author -}} }
 \maketitle
 
+% Exemplo de Sumário e Conteúdo:
+\tableofcontents
+
 {% for section in content.sections %}
-  {% if section.type == "heading_1" %}
-    \section{% raw}{{% endraw %}{{ section.text }}{% raw}{{% endraw %}}
+  {% if section.type == "heading_part" %}
+\part{ {{- section.text -}} } % Comando para "partes" em LaTeX
+  {% elif section.type == "heading_1" %}
+\section{ {{- section.text -}} } % Títulos de capítulo/seção
   {% endif %}
+  
+  {% set current_list_type = none %}
   {% for item in section.content %}
     {% if item.type == "paragraph_default" %}
-      {% raw}{{% endraw %}{{ item.text }}{% raw}{{% endraw %}}
+      {% if current_list_type %}
+\end{ {{- current_list_type -}} }
+        {% set current_list_type = none %}
+      {% endif %}
+{{ item.text | trim }}
+\par % Garante nova linha para cada parágrafo
     {% elif item.type == "list_item_bullet" %}
-      % Renderizar lista aqui com \begin{itemize} e \item
+      {% if current_list_type != "itemize" %}
+        {% if current_list_type %}
+\end{ {{- current_list_type -}} }
+        {% endif %}
+\begin{itemize}
+        {% set current_list_type = "itemize" %}
+      {% endif %}
+\item {{ item.text | trim }}
+    {% elif item.type == "list_item_numbered" %}
+      {% if current_list_type != "enumerate" %}
+        {% if current_list_type %}
+\end{ {{- current_list_type -}} }
+        {% endif %}
+\begin{enumerate}
+        {% set current_list_type = "enumerate" %}
+      {% endif %}
+\item {{ item.text | trim }}
     {% endif %}
-    \par % Garante nova linha para cada parágrafo
   {% endfor %}
+  
+  {% if current_list_type %}
+\end{ {{- current_list_type -}} }
+  {% endif %}
 {% endfor %}
 
 \end{document}

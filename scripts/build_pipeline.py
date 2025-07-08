@@ -108,6 +108,8 @@ def main():
         ("Converter MD → HTML", "scripts/md_para_html.py"),
         ("Gerar ePub", "scripts/gerar_epub.py"),
         ("Validar ePub", "scripts/validar_epub.py"),
+        ("Gerar LaTex", "scripts/gerar_latex.py"),
+        ("Gerar PDF", "scripts/latex_para_pdf.py"),
         ("Renderizar JSON → FODT", "scripts/renderizar_json_para_fodt.py"),
         ("Exportar FODT → ODT/PDF", "scripts/consolidar_e_exportar_odt_pdf.py"),
     ]
