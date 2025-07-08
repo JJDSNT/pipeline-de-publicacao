@@ -2,9 +2,6 @@
 \documentclass[10pt]{article}
 
 % --- Configurações de Idioma e Codificação ---
-% inputenx e fontenc são automaticamente tratados por XeLaTeX com utf8 e fontes OpenType,
-% mas mantê-los para compatibilidade ou clareza é ok.
-\usepackage[utf8]{inputenx}
 \usepackage[T1]{fontenc}
 \usepackage[main={{ lang }}]{babel} % Idioma principal. ex: brazil, english
 
@@ -17,33 +14,18 @@
 % --- FIM DO AJUSTE DO XCOLOR ---
 
 % --- Configurações de Fonte com Fontspec para XeLaTeX ---
-% NOTA: A linha 'Path=./fonts/,' FOI COMENTADA.
-% Isso fará com que o XeLaTeX procure as fontes instaladas globalmente no sistema.
 \usepackage{fontspec}
-\setmainfont[
-  % Path=./fonts/, % <-- ESTA LINHA FOI COMENTADA
-  Extension=.otf,
-  UprightFont=*-Regular,
-  ItalicFont=*-Italic,
-  BoldFont=*-Bold,
-  BoldItalicFont=*-BoldItalic
-]{LatinModernRoman} % Nome base da família de fontes Latin Modern Roman
 
-\setsansfont[
-  % Path=./fonts/, % <-- ESTA LINHA FOI COMENTADA
-  Extension=.otf,
-  UprightFont=*-Regular,
-  ItalicFont=*-Italic,
-  BoldFont=*-Bold,
-  BoldItalicFont=*-BoldItalic
-]{LatinModernSans} % Nome base da família de fontes Latin Modern Sans
+% OPÇÃO 1: Usar fontes padrão do LaTeX (mais compatível)
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
 
 % --- Configuração de Layout e Margens ---
 \usepackage[a4paper,
-  left={{ styles.document_margins_cm }}cm,
-  right={{ styles.document_margins_cm }}cm,
-  top={{ styles.document_margins_cm }}cm,
-  bottom={{ styles.document_margins_cm }}cm
+  left={{ styles.document_margins_cm }}cm,
+  right={{ styles.document_margins_cm }}cm,
+  top={{ styles.document_margins_cm }}cm,
+  bottom={{ styles.document_margins_cm }}cm
 ]{geometry}
 
 % --- Espaçamento de Linha ---
@@ -55,21 +37,21 @@
 
 % Título do Documento/Livro
 \titleformat{\section}[display]
-  {\bfseries\centering\Huge\color{DarkBlueHeading}}
-  {}
-  {0pt}
-  {\normalfont}
+  {\bfseries\centering\Huge\color{DarkBlueHeading}}
+  {}
+  {0pt}
+  {\normalfont}
 
 % --- Customizações para capítulos e partes (se necessário) ---
 % Exemplo para Capítulos (usando \chapter em book/report, ou \section em article)
 % Aqui, como estamos usando article, \section é o maior título.
 \titleformat{\section}[hang] % [hang] para título pendurado (indentado)
-  {\sffamily\bfseries\color{DarkBlueHeading}\fontsize{ {{ styles.heading_1_font_size_pt }}pt}{ {{ styles.heading_1_line_spacing_pt }}pt}\selectfont}
-  {}
-  {0pt} % Sem separação horizontal entre número/título
-  {\raggedright} % Alinhamento do título
+  {\sffamily\bfseries\color{DarkBlueHeading}\fontsize{ {{ styles.heading_1_font_size_pt }}pt}{ {{ styles.heading_1_line_spacing_pt }}pt}\selectfont}
+  {}
+  {0pt} % Sem separação horizontal entre número/título
+  {\raggedright} % Alinhamento do título
 \titlespacing*{\section}
-  {0pt}{ {{ styles.heading_1_margin_top_cm }}cm}{ {{ styles.heading_1_margin_bottom_cm }}cm}
+  {0pt}{ {{ styles.heading_1_margin_top_cm }}cm}{ {{ styles.heading_1_margin_bottom_cm }}cm}
 
 % --- Ajustes de Parágrafo ---
 \usepackage{indentfirst} % Indenta o primeiro parágrafo de cada seção
@@ -80,21 +62,38 @@
 % --- Outros Pacotes úteis ---
 \usepackage{hyperref} % Para links internos e índice clicável
 \hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    filecolor=magenta,      
-    urlcolor=cyan,
-    pdftitle={{ content.title | escape_latex }},
-    pdfauthor={{ content.author | escape_latex }},
-    linktocpage=true % Makes the page number in the toc clickable
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={{ content.title | escape_latex }},
+    pdfauthor={{ content.author | escape_latex }},
+    linktocpage=true % Makes the page number in the toc clickable
 }
 
 \usepackage{enumitem} % Para listas personalizadas
 \usepackage{ragged2e} % Para justificação de texto
 \usepackage{graphicx} % Para inclusão de imagens
 
-% --- REMOVIDAS AS LINHAS PROBLEMATICAS DE DeclareUnicodeCharacter ---
-% O filtro escape_latex e Pandoc já cuidam disso.
+% --- CONFIGURAÇÕES DE SUMÁRIO COM TOCLOFT ---
+\usepackage{tocloft}
+
+% Define a largura do espaço para os números de página (ajuste conforme necessário)
+\setlength{\cftchapnumwidth}{2.5em} % Para capítulos (parte neste caso)
+\setlength{\cftsecnumwidth}{3.5em} % Para seções (capítulos neste caso)
+
+% Adiciona líderes (pontinhos) para partes e seções
+\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+% Ajusta a formatação dos títulos no sumário (ex: negrito)
+\renewcommand{\cftpartfont}{\bfseries} % Partes em negrito no sumário
+\renewcommand{\cftsecfont}{\mdseries} % Seções em fonte média no sumário (normal)
+
+% Ajusta os espaçamentos das entradas no sumário
+\setlength{\cftbeforechapskip}{0.5\baselineskip} % Espaço antes de cada 'part'
+\setlength{\cftbeforesecskip}{0.2\baselineskip} % Espaço antes de cada 'section'
+% --- FIM DAS CONFIGURAÇÕES DE SUMÁRIO ---
 
 {% raw %}\title{{\fontsize{36pt}{40pt}\selectfont\bfseries\color{DarkBlueHeading} {% endraw %}{{ content.title | escape_latex }}{% raw %} \\}} % Título com cor e negrito{% endraw %}
 {% raw %}\author{{\fontsize{24pt}{28pt}\selectfont\color{text_gray} {% endraw %}{{ content.author | escape_latex }}{% raw %} \\}} % Autor com cor{% endraw %}
@@ -108,16 +107,16 @@
 \clearpage
 
 {% for section in content.sections %}
-    {% if section.type == "heading_part" %}
-        \part*{ {{ section.text | escape_latex }} }
-    {% elif section.type == "heading_1" %}
-        \section*{ {{ section.text | escape_latex }} }
-    {% endif %}
-    {% for block in section.content %}
-        {% if block.type == "raw_latex" %}
-            {{ block.text }} 
-        {% endif %}
-    {% endfor %}
+    {% if section.type == "heading_part" %}
+        \part{ {{ section.text | escape_latex }} } 
+    {% elif section.type == "heading_1" %}
+        \section{ {{ section.text | escape_latex }} } 
+    {% endif %}
+    {% for block in section.content %}
+        {% if block.type == "raw_latex" %}
+            {{ block.text }} 
+        {% endif %}
+    {% endfor %}
 {% endfor %}
 
 \end{document}
